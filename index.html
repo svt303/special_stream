@@ -10,11 +10,23 @@
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
-<style>
+ <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
         .video-container {
             position: relative;
             width: 853px;
             height: 480px;
+        }
+        /* Hide default controls */
+        iframe {
+            pointer-events: none; /* Disable interaction with iframe */
         }
         .controls {
             position: absolute;
@@ -28,6 +40,7 @@
             border-radius: 5px;
             opacity: 1;
             transition: opacity 0.5s;
+            pointer-events: all; /* Enable interaction with custom controls */
         }
         .controls.hidden {
             opacity: 0;
@@ -45,26 +58,20 @@
             font-weight: bold;
             margin-left: 10px;
         }
-        .watermark {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: white;
-            font-size: 20px;
-            opacity: 0.7;
-        }
     </style>
 </head>
 <body>
     <div class="video-container">
-        <iframe id="video" width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+        <!-- Embedded iframe with autoplay and no controls -->
+        <iframe id="video" width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1&controls=0" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+        
+        <!-- Custom controls -->
         <div class="controls" id="controls">
             <button id="playPauseBtn">⏯</button>
             <button id="volumeBtn">🔊</button>
             <button id="fullscreenBtn">⛶</button>
             <span class="live-indicator">LIVE</span>
         </div>
-        <div class="watermark">SEVENTEEN ZONE PH</div>
     </div>
 
     <script>
@@ -116,6 +123,9 @@
                 document.exitFullscreen();
             }
         });
+
+        // Ensure audio is not muted initially
+        video.muted = false;
 
         hideControls();
     </script>
