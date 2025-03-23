@@ -86,13 +86,6 @@
  <h1 align="left">STREAMING🔴....</h1>
   <center>
 
-    <div class="instruction-modal" id="instructionModal">
-  <div class="instruction-content">
-    <p>Welcome! Use the custom controls below the video to play/pause, adjust volume, or toggle fullscreen. Controls auto-hide for immersive viewing.</p>
-    <button class="control-btn" onclick="document.getElementById('instructionModal').classList.add('hide')">Got it</button>
-  </div>
-</div>
-
     <div class="video-wrapper" id="videoWrapper">
       <!-- OK.ru Video -->
       <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
@@ -112,6 +105,13 @@
     </div>
   </center>
 
+    <div class="instruction-modal" id="instructionModal">
+  <div class="instruction-content">
+    <p>Welcome! Use the custom controls below the video to play/pause, adjust volume, or toggle fullscreen. Controls auto-hide for immersive viewing.</p>
+    <button class="control-btn" onclick="document.getElementById('instructionModal').classList.add('hide')">Got it</button>
+  </div>
+</div>
+  
 <script>
  const playPauseBtn = document.getElementById('playPause');
     const volumeToggleBtn = document.getElementById('volumeToggle');
