@@ -12,12 +12,6 @@
       background: #808080;
       transition: transform 0.5s ease;
     }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-    }
-
     .controls {
       position: absolute;
       bottom: 10px;
@@ -39,12 +33,19 @@
 </head>
 <body>
 
-<div id="videoContainer">
-  <iframe id="videoFrame" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-<script>
-  function closeVideo() {
-    document.getElementById('videoContainer').style.display = 'none';
-  }
+<div style="position: relative; width: 853px; height: 480px;">
+  <iframe 
+    width="853" 
+    height="480" 
+    src="//ok.ru/videoembed/9252831698648?autoplay=1" 
+    frameborder="0" 
+    allow="autoplay" 
+    allowfullscreen>
+  </iframe>
+  
+  <!-- Transparent overlay to block controls -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></div>
+</div>
 </script>
 
   <div class="controls">
