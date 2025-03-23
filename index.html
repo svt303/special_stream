@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Special Stream</title>
+  <title>Custom OK.ru Player</title>
   <style>
     body {
       margin: 0;
-      background-color: #FFFFFF;
+      background-color: white;
       display: flex;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .container {
       position: relative;
@@ -19,20 +21,21 @@
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none;
+      pointer-events: none; /* Lock default controls */
     }
     .controls {
       position: absolute;
-      bottom: 8px;
-      left: 3px;
-      right: 18px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       display: flex;
-      justify-content: left;
+      justify-content: space-between;
       opacity: 1;
       transition: opacity 0.5s;
       background: rgba(0, 0, 0, 0.5);
       padding: 10px;
       border-radius: 10px;
+      z-index: 5;
     }
     .controls.hidden {
       opacity: 0;
@@ -53,6 +56,7 @@
       opacity: 0.7;
       font-size: 18px;
       pointer-events: none;
+      z-index: 4;
     }
     .instructions-modal {
       position: absolute;
@@ -76,24 +80,21 @@
     }
   </style>
 </head>
-  <h1 align="left" >STREAMING.....</h1>
 <body>
 
-<center>
 <div class="container" id="videoContainer">
   <iframe id="videoFrame" src="//ok.ru/videoembed/9252831698648?autoplay=1&muted=0" frameborder="0" allow="autoplay; fullscreen"></iframe>
   
-  <div class="watermark">CARATLAND 2025</div>
+  <div class="watermark">My Watermark</div>
 
   <div class="controls" id="controls">
     <button id="playPause">Pause</button>
     <button id="volume">Mute</button>
     <button id="fullscreen">Fullscreen</button>
   </div>
-</center>
 
   <div class="instructions-modal" id="instructions">
-    <div>Welcome! Tap anywhere or use buttons to control the video. Audio is ON.</div>
+    <div>Welcome! Use the buttons to control video. Tap anywhere to unmute.</div>
     <button onclick="closeInstructions()">Got it!</button>
   </div>
 </div>
@@ -106,7 +107,6 @@
   const volumeBtn = document.getElementById('volume');
   const fullscreenBtn = document.getElementById('fullscreen');
 
-  // Auto-hide controls
   let hideTimeout;
   const showControls = () => {
     controls.classList.remove('hidden');
@@ -116,7 +116,6 @@
   container.addEventListener('mousemove', showControls);
   showControls();
 
-  // PostMessage API
   let isPaused = false;
   playPauseBtn.onclick = () => {
     iframe.contentWindow.postMessage({ method: 'playPause' }, '*');
@@ -124,7 +123,6 @@
     playPauseBtn.textContent = isPaused ? 'Play' : 'Pause';
   };
 
-  // Volume control (mute/unmute)
   let isMuted = false;
   volumeBtn.onclick = () => {
     iframe.contentWindow.postMessage({ method: isMuted ? 'unmute' : 'mute' }, '*');
@@ -132,10 +130,11 @@
     volumeBtn.textContent = isMuted ? 'Unmute' : 'Mute';
   };
 
-  // Fullscreen toggle
   fullscreenBtn.onclick = () => {
     if (!document.fullscreenElement) {
-      container.requestFullscreen();
+      container.requestFullscreen().then(() => {
+        screen.orientation.lock('landscape').catch(() => {});
+      });
       fullscreenBtn.textContent = 'Exit Fullscreen';
     } else {
       document.exitFullscreen();
@@ -143,12 +142,10 @@
     }
   };
 
-  // Instructions modal close
   function closeInstructions() {
     document.getElementById('instructions').style.display = 'none';
   }
 
-  // Extra: On first click, ensure sound plays
   container.addEventListener('click', () => {
     iframe.contentWindow.postMessage({ method: 'unmute' }, '*');
   });
