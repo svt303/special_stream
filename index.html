@@ -11,9 +11,8 @@
 <body>
     <h1 align="left">STREAMING....</h1>
  <style>
-    body {justify-content: center; align-items: center; }
 
-    .video-wrapper {
+    .video-container {
       position: relative;
       width: 853px;
       height: 480px;
@@ -22,19 +21,21 @@
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Disable interaction */
+      pointer-events: none; /* disable default control interaction */
     }
 
     .custom-controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 4px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.7);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      opacity: 1;
+      padding: 5px 10px;
       transition: opacity 0.5s;
+      opacity: 1;
     }
 
     .custom-controls.hidden {
@@ -43,36 +44,41 @@
     }
 
     .control-btn {
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 8px;
+      background: transparent;
       border: none;
-      border-radius: 5px;
-      margin-right: 4px;
+      color: white;
+      font-size: 20px;
+      margin: 0 5px;
       cursor: pointer;
     }
 
     .volume-slider {
-      width: 30px;
+      width: 80px;
     }
 
-    .live {
+    .live-indicator {
       color: red;
-      margin-left: 4px;
+      margin-left: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+<center>
+<div class="video-container" onmousemove="showControls()">
+  <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </center>
 
-<div class="video-wrapper" onmousemove="showControls()">
-  <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-   <h3 align="center">DAY 2 | 2025 FAN MEETING SEVENTEEN IN CARTLAND</h3> 
-    
+  <!-- Custom Controls -->
   <div class="custom-controls" id="controls">
-    <button class="control-btn" onclick="togglePlay()">⏯️</button>
-    <button class="control-btn" onclick="alert('Volume not controllable due to browser restriction')">🔊</button>
-    <span class="live">LIVE</span>
-    <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+    <div>
+      <button class="control-btn" onclick="togglePlay()">⏯️</button>
+      <button class="control-btn" onclick="volumeNotice()">🔊</button>
+      <span class="live-indicator">LIVE</span>
+    </div>
+    <div>
+      <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+    </div>
   </div>
 </div>
 
@@ -89,28 +95,36 @@
   }
 
   function togglePlay() {
+    // We can't control the iframe directly, so reload (simulate play/pause)
     const iframe = document.querySelector('iframe');
-    iframe.src = iframe.src; // Reload iframe to simulate "play/pause"
+    iframe.src = iframe.src;
+  }
+
+  function volumeNotice() {
+    alert("Unfortunately, OK.ru video volume can't be controlled due to browser restrictions.\nPlease use device volume buttons.");
   }
 
   function toggleFullscreen() {
-    const wrapper = document.querySelector('.video-wrapper');
-    if (wrapper.requestFullscreen) {
-      wrapper.requestFullscreen();
-    } else if (wrapper.webkitRequestFullscreen) {
-      wrapper.webkitRequestFullscreen();
-    } else if (wrapper.msRequestFullscreen) {
-      wrapper.msRequestFullscreen();
+    const container = document.querySelector('.video-container');
+    if (container.requestFullscreen) {
+      container.requestFullscreen();
+    } else if (container.webkitRequestFullscreen) {
+      container.webkitRequestFullscreen();
+    } else if (container.msRequestFullscreen) {
+      container.msRequestFullscreen();
     }
   }
 
-  // Start auto-hide behavior
+  // Start auto-hide
   showControls();
 </script>
-     
+
+
+    <div>
         <script src="https://cdn.logwork.com/widget/countdown.js"></script>
 <a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
 
 <div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
+</div>
     </body>
 </html>
