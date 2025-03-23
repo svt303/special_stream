@@ -11,136 +11,124 @@
 <body>
     <h1 align="left">STREAMING....</h1>
 <style>
-    
+    body {
+      margin: 0;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
     .video-container {
       position: relative;
       width: 853px;
-      max-width: 90%;
-      background: #000;
-      overflow: hidden;
+      height: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    video {
+
+    iframe {
       width: 100%;
-      height: auto;
+      height: 100%;
+      pointer-events: none; /* Disable interaction with default OK.ru controls */
     }
-    .controls {
+
+    .custom-controls {
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 100%;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.7);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      opacity: 1;
+      justify-content: space-between;
+      padding: 8px 12px;
       transition: opacity 0.5s;
+      opacity: 1;
     }
-    .controls.hidden {
+
+    .custom-controls.hidden {
       opacity: 0;
       pointer-events: none;
     }
-    .controls button, .controls input[type=range] {
-      background: none;
+
+    .control-btn {
+      background: transparent;
       border: none;
       color: white;
-      margin: 0 8px;
+      font-size: 20px;
+      margin: 0 5px;
       cursor: pointer;
-      font-size: 16px;
     }
+
     .live-indicator {
       color: red;
-      font-weight: bold;
       margin-left: 10px;
+      font-weight: bold;
     }
-    .watermark {
-      position: absolute;
+   .watermark {
+      position: right;
       top: 10px;
       left: 10px;
       color: rgba(255, 255, 255, 0.3);
-      font-size: 24px;
+      font-size: 12px;
       pointer-events: none;
       user-select: none;
-    }
   </style>
 </head>
 <body>
 
-  <div class="video-container">
-    <div class="watermark">LIVE STREAM</div>
-
-    <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-
-
-    <div class="controls" id="controls">
-      <div>
-        <button id="playPause">⏸️</button>
-        <span class="live-indicator">● LIVE</span>
-      </div>
-      <div>
-        <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
-        <button id="fullscreen">🔲</button>
-      </div>
+<div class="video-container" onmousemove="showControls()">
+  <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    <div class="watermark">svtzoneph</div>
+</div>
+  <!-- Custom Controls -->
+  <div class="custom-controls" id="controls">
+    <div>
+      <button class="control-btn" onclick="togglePlay()">⏯️</button>
+      <button class="control-btn" onclick="volumeNotice()">🔊</button>
+      <span class="live-indicator">LIVE</span>
+    </div>
+    <div>
+      <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
     </div>
   </div>
+</div>
 
-  <script>
-    const video = document.getElementById("myVideo");
-    const playPause = document.getElementById("playPause");
-    const volume = document.getElementById("volume");
-    const fullscreen = document.getElementById("fullscreen");
-    const controls = document.getElementById("controls");
-    let hideTimeout;
+<script>
+  let controls = document.getElementById('controls');
+  let hideTimeout;
 
-    // Play/Pause Toggle
-    playPause.addEventListener("click", () => {
-      if (video.paused) {
-        video.play();
-        playPause.textContent = "⏸️";
-      } else {
-        video.pause();
-        playPause.textContent = "▶️";
-      }
-    });
+  function showControls() {
+    controls.classList.remove('hidden');
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      controls.classList.add('hidden');
+    }, 3000);
+  }
 
-    // Volume Control
-    volume.addEventListener("input", () => {
-      video.volume = volume.value;
-    });
+  function togglePlay() {
+    // Reload iframe to simulate play/pause (no real control)
+    const iframe = document.querySelector('iframe');
+    iframe.src = iframe.src;
+  }
 
-    // Fullscreen Toggle
-    fullscreen.addEventListener("click", () => {
-      if (!document.fullscreenElement) {
-        video.parentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    });
+  function volumeNotice() {
+    alert("Volume control is not available due to OK.ru iframe restrictions. Use your device volume buttons.");
+  }
 
-    // Auto-hide Controls
-    function showControls() {
-      controls.classList.remove("hidden");
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => {
-        controls.classList.add("hidden");
-      }, 2000);
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      fullscreenBtn.textContent = 'Exit Fullscreen';
+    } else {
+      fullscreenBtn.textContent = 'Fullscreen';
     }
-
-    video.addEventListener("mousemove", showControls);
-    controls.addEventListener("mousemove", showControls);
-
-    // Prevent video mute
-    video.muted = false;
-    video.volume = 1;
-
-    // Initial auto-hide after video loads
-    video.addEventListener("loadeddata", () => {
-      showControls();
-    });
-
-    // Prevent context menu (not foolproof)
-    video.addEventListener('contextmenu', (e) => e.preventDefault());
-  </script>
+  });
+  // Start auto-hide
+  showControls();
+</script>
 
 
     <div>
