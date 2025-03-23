@@ -2,50 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-        <meta name="viewport" content="with=device-width, initial-
-        scale=1.0">
-        <title>Special Stream</title>
-       <body bgcolor="darkgray">
- 
-<style>
-    iframe {
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special Stream</title>
+  <style>
+    body { background-color: darkgray; margin: 0; }
+    .video-wrapper {
+      position: relative;
       width: 853px;
       height: 480px;
-      pointer-events: none; /* Prevent user interaction */
+      margin: auto;
+      background: black;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .overlay-blocker {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 5;
     }
     .controls {
       position: absolute;
-      bottom: 10px;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+      bottom: 10px; left: 10px;
+      display: flex; gap: 10px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px;
+      border-radius: 8px;
       opacity: 1;
       transition: opacity 0.5s;
-      z-index: 10;
     }
-    .control-btn {
-      background: rgba(0, 0, 0, 0.7);
-      border: none;
-      color: white;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    .watermark {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      color: white;
-      background: rgba(0,0,0,0.5);
+    .controls button {
+      background: white; border: none;
       padding: 5px 10px;
-      font-size: 14px;
-      border-radius: 5px;
-      z-index: 10;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
     }
-     #instructionModal {
+    .hidden-controls {
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .watermark { 
+      position: absolute; 
+      top: 10px; 
+      right: 10px; 
+      color: white; 
+      font-size: 18px; 
+      background: rgba(0, 0, 0, 0.5); 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+      pointer-events: none;
+    }
+    #instructionModal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -58,13 +69,13 @@
       border-radius: 10px;
       text-align: center;
     }
-   
+  </style>
 </head>
 <body>
- <h1 align="left">STREAMING🔴....</h1>
-  
+  <h1 align="left">STREAMING🔴....</h1>
   <center>
-     <div id="instructionModal">
+
+    <div id="instructionModal">
       <div>
         <h2>Instructions</h2>
         <p>No Sound?</p>
@@ -72,64 +83,106 @@
         <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
       </div>
     </div>
-  
-   <div class="video-container" id="videoContainer">
-  <iframe id="videoIframe" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
 
-  <div class="watermark">CARATLAND 2025</div>
+    <div class="video-wrapper" id="videoWrapper">
+      <!-- OK.ru Video -->
+      <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+      
+      <!-- Overlay blocker -->
+      <div class="overlay-blocker"></div>
+      
+      <!-- Watermark -->
+      <div class="watermark">DAY 2 CL25</div>
 
-  <div class="controls" id="controls">
-    <button class="control-btn" id="playPause">Pause</button>
-    <button class="control-btn" id="volumeToggle">Mute</button>
-    <button class="control-btn" id="fullscreenToggle">Fullscreen</button>
-  </div>
+      <!-- Custom Controls -->
+      <div class="controls" id="customControls">
+        <button id="playPause">Pause</button>
+        <button id="volumeToggle">Sound On</button>
+        <button id="fullscreenToggle">Fullscreen</button>
+      </div>
+    </div>
+  </center>
 
-</center>
-  
-<script>
-  const controls = document.getElementById('controls');
-  const container = document.getElementById('videoContainer');
-  const iframe = document.getElementById('videoIframe');
+  <script>
+    const playPauseBtn = document.getElementById('playPause');
+    const volumeToggleBtn = document.getElementById('volumeToggle');
+    const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
+    const videoWrapper = document.getElementById('videoWrapper');
+    const controls = document.getElementById('customControls');
+    const iframe = document.getElementById('okVideo');
 
-  let isMuted = false;
-  let isPlaying = true;
+    let isPlaying = true;
+    let isMuted = false;
+    let autoHideTimeout;
 
-  // Play/Pause button logic (visual only due to iframe restrictions)
-  document.getElementById('playPause').addEventListener('click', () => {
-    isPlaying = !isPlaying;
-    document.getElementById('playPause').textContent = isPlaying ? 'Pause' : 'Play';
-  });
-
-  // Volume toggle button logic (visual only due to iframe restrictions)
-  document.getElementById('volumeToggle').addEventListener('click', () => {
-    isMuted = !isMuted;
-    document.getElementById('volumeToggle').textContent = isMuted ? 'Unmute' : 'Mute';
-  });
-
-  // Fullscreen toggle
-  document.getElementById('fullscreenToggle').addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().then(() => {
-        screen.orientation.lock('landscape').catch(() => {});
-      });
-    } else {
-      document.exitFullscreen();
+    // Auto Hide Controls
+    function showControls() {
+      controls.classList.remove('hidden-controls');
+      clearTimeout(autoHideTimeout);
+      autoHideTimeout = setTimeout(() => {
+        controls.classList.add('hidden-controls');
+      }, 3000);
     }
-  });
 
-  // Auto-hide controls
-  let hideTimeout;
-  function resetHideTimer() {
-    controls.style.opacity = 1;
-    clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(() => {
-      controls.style.opacity = 0;
-    }, 3000);
-  }
+    // Fullscreen
+    fullscreenToggleBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        videoWrapper.requestFullscreen().then(() => {
+          if (screen.orientation) {
+            screen.orientation.lock('landscape').catch(() => {});
+          }
+        });
+      } else {
+        document.exitFullscreen();
+        if (screen.orientation) {
+          screen.orientation.unlock?.();
+        }
+      }
+    });
 
-  container.addEventListener('mousemove', resetHideTimer);
-  resetHideTimer();
-</script>
+    // Play/Pause
+    playPauseBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
+        playPauseBtn.textContent = 'Play';
+        isPlaying = false;
+      } else {
+        iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1');
+        playPauseBtn.textContent = 'Pause';
+        isPlaying = true;
+      }
+    });
+
+    // Volume (simulated)
+    volumeToggleBtn.addEventListener('click', () => {
+      if (isMuted) {
+        volumeToggleBtn.textContent = 'Sound On';
+        isMuted = false;
+      } else {
+        volumeToggleBtn.textContent = 'Sound Off';
+        isMuted = true;
+      }
+    });
+
+    // Mousemove - show controls
+    document.addEventListener('mousemove', () => {
+      if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
+        showControls();
+      }
+    });
+
+    // Fullscreen change
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        showControls();
+      } else {
+        controls.classList.remove('hidden-controls');
+        clearTimeout(autoHideTimeout);
+      }
+    });
+
+    videoWrapper.addEventListener('mousemove', showControls);
+  </script>
   <center><p>================================================================================</p></center>
                 <!-- Badge Code - Do Not Change The Code -->
 <center><a class="hitCounter" href="https://visitorshitcounter.com/" target="_blank" title="Hit counter" data-name="7235ba566051ddb4751e3c2c97ff29f1|5|ip|1|#0373dd|#ffffff|small|ser-hit">Hit Counter</a><script>document.write("<script type='text/javascript' src='https://visitorshitcounter.com/js/hitCounter.js?v="+Date.now()+"'><\/script>");</script></center>
