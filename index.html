@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom OK.ru Player</title>
+  <title>Special Live</title>
   <style>
     body {
       margin: 0;
       background: #2c2c2c;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: up, center;
       height: 100vh;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
     }
-    .player-container {
+    .video-container {
       position: relative;
       width: 90%;
       max-width: 900px;
@@ -114,10 +114,10 @@
 </head>
 <body>
 
-<div class="player-container" id="player">
+<div class="video-container" id="videoContainer">
   <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay"></iframe>
   
-  <div class="watermark">My Watermark</div>
+  <div class="watermark">Special Live</div>
   
   <div class="controls" id="controls">
     <button id="playPause">⏸️</button>
