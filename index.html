@@ -1,158 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Special Live</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: gray;
-      color: #fff;
-    }
-    .video-container {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom OK.ru Player</title>
+  <body background: gray>
+ 
+    <style>
+    .player-container {
       position: relative;
-      width: 853px;
-      height: 480px;
-      margin: 20px auto;
+      width: 90%;
+      max-width: 853px;
+      aspect-ratio: 16 / 9;
+      background: black;
     }
     iframe {
       width: 100%;
       height: 100%;
-      border: none;
+      pointer-events: none; /* Prevent interaction with default controls */
     }
-    .custom-controls {
+    .controls {
       position: absolute;
       bottom: 10px;
-      left: 10px;
+      left: 0;
+      right: 0;
       display: flex;
-      gap: 10px;
+      justify-content: center;
+      gap: 15px;
       opacity: 1;
       transition: opacity 0.5s;
+      z-index: 10;
     }
-    .custom-controls.hidden {
-      opacity: 0;
-    }
-    .custom-controls button {
-      background: rgba(0, 0, 0, 0.7);
+    .controls button {
+      background: rgba(0,0,0,0.7);
+      color: white;
       border: none;
-      color: #fff;
       padding: 10px;
+      border-radius: 50%;
+      font-size: 16px;
       cursor: pointer;
-      border-radius: 5px;
     }
     .watermark {
       position: absolute;
       top: 10px;
-      right: 10px;
-      font-size: 20px;
-      opacity: 0.7;
+      left: 10px;
+      color: white;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      font-size: 14px;
+      z-index: 10;
+      border-radius: 5px;
     }
-    #instructionsModal {
-      display: none;
+    .instructions-modal {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .instructions-content {
       background: white;
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      color: #000;
-      z-index: 1000;
+      max-width: 400px;
+      text-align: center;
+      border-radius: 10px;
     }
-    #instructionsModal h2 {
-      margin-top: 0;
-    }
-    #instructionsModal button {
-      background: #007bff;
-      color: #fff;
-      border: none;
+    .instructions-content button {
+      margin-top: 15px;
       padding: 10px 20px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
   </style>
 </head>
-<h1 align="left">STREAMING.....</h1>
 <body>
-  <div class="video-container">
-    <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allowfullscreen></iframe>
-    <div class="custom-controls" id="customControls">
-      <button id="playPauseBtn">Play/Pause</button>
-      <button id="volumeBtn">Toggle Volume</button>
-      <button id="fullscreenBtn">Fullscreen</button>
-    </div>
-    <div class="watermark">Y</div>
+
+<div class="player-container" id="player">
+  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay"></iframe>
+  
+  <div class="watermark">................</div>
+  
+  <div class="controls" id="controls">
+    <button id="playPause">⏸️</button>
+    <button id="volume">🔊</button>
+    <button id="fullscreen">⛶</button>
   </div>
+</div>
 
-  <button id="showModalBtn" style="margin: 20px auto; display: block;">Show Instructions</button>
-
-  <div id="instructionsModal">
-    <h2>Instructions</h2>
-    <p>Use the custom buttons to control the video:</p>
-    <ul>
-      <li><strong>Play/Pause:</strong> Start or pause the video.</li>
-      <li><strong>Toggle Volume:</strong> Mute or unmute the audio.</li>
-      <li><strong>Fullscreen:</strong> Enter or exit fullscreen mode.</li>
-    </ul>
-    <button id="closeModalBtn">Close</button>
+<div class="instructions-modal" id="modal">
+  <div class="instructions-content">
+    <h3>Instructions</h3>
+    <p>Use the custom controls to play/pause, toggle volume, and fullscreen the video.</p>
+    <button onclick="closeModal()">Got it!</button>
   </div>
+</div>
 
-  <script>
-    // Auto-hide controls after inactivity
-    let inactivityTimer;
-    const customControls = document.getElementById('customControls');
+<script>
+  const player = document.getElementById('player');
+  const controls = document.getElementById('controls');
+  const playPauseBtn = document.getElementById('playPause');
+  const volumeBtn = document.getElementById('volume');
+  const fullscreenBtn = document.getElementById('fullscreen');
+  let isPlaying = true;
+  let isMuted = false;
+  let hideTimeout;
 
-    function resetInactivityTimer() {
-      clearTimeout(inactivityTimer);
-      customControls.classList.remove('hidden');
-      inactivityTimer = setTimeout(() => {
-        customControls.classList.add('hidden');
-      }, 3000); // Hide after 3 seconds of inactivity
+  // Auto-hide controls
+  function showControls() {
+    controls.style.opacity = 1;
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      controls.style.opacity = 0;
+    }, 3000);
+  }
+
+  player.addEventListener('mousemove', showControls);
+  player.addEventListener('click', showControls);
+  showControls(); // Initial show
+
+  // Play/Pause toggle (Note: Limited control over iframe, we only simulate behavior visually)
+  playPauseBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
+  });
+
+  // Volume toggle (we can't control OK.ru iframe audio, so it's visual)
+  volumeBtn.addEventListener('click', () => {
+    isMuted = !isMuted;
+    volumeBtn.textContent = isMuted ? '🔇' : '🔊';
+  });
+
+  // Fullscreen toggle
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      player.requestFullscreen().then(() => {
+        screen.orientation.lock('landscape').catch(() => {});
+      }).catch(err => {});
+    } else {
+      document.exitFullscreen();
     }
+  });
 
-    document.addEventListener('mousemove', resetInactivityTimer);
-    document.addEventListener('click', resetInactivityTimer);
+  // Instructions Modal
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+</script>
 
-    // Fullscreen toggle
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const videoContainer = document.querySelector('.video-container');
-
-    fullscreenBtn.addEventListener('click', () => {
-      if (videoContainer.requestFullscreen) {
-        videoContainer.requestFullscreen();
-      } else if (videoContainer.webkitRequestFullscreen) { // Safari
-        videoContainer.webkitRequestFullscreen();
-      } else if (videoContainer.msRequestFullscreen) { // IE/Edge
-        videoContainer.msRequestFullscreen();
-      }
-    });
-
-    // Instructions modal
-    const showModalBtn = document.getElementById('showModalBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const instructionsModal = document.getElementById('instructionsModal');
-
-    showModalBtn.addEventListener('click', () => {
-      instructionsModal.style.display = 'block';
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-      instructionsModal.style.display = 'none';
-    });
-
-    // Simulate play/pause and volume toggle (requires access to iframe content)
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const volumeBtn = document.getElementById('volumeBtn');
-
-    playPauseBtn.addEventListener('click', () => {
-      alert('Play/Pause functionality requires access to the iframe content.');
-    });
-
-    volumeBtn.addEventListener('click', () => {
-      alert('Volume toggle functionality requires access to the iframe content.');
-    });
-  </script>
 </body>
 </html>
