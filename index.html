@@ -3,240 +3,175 @@
 <head>
   <meta charset="UTF-8">
         <meta name="viewport" content="with=device-width, initial-
-        scale=1.0">
+        scale=1.0"/>
         <title>Special Stream</title>
        <body bgcolor="darkgray">
  
- <style>
-    .video-wrapper {
+  <style>
+    .video-container {
       position: relative;
-      width: 853px;
-      height: 480px;
-      margin: auto;
-      background: black;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Disable default controls interaction */
+      pointer-events: none; /* Disable default controls */
     }
-
-    .overlay-blocker {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 5;
-    }
-
     .controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       gap: 10px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 8px;
-      border-radius: 8px;
-      opacity: 1;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 10px;
       transition: opacity 0.5s;
+      z-index: 2;
     }
-
-    .controls button {
-      background: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .hidden-controls {
+    .controls.hidden {
       opacity: 0;
-      transition: opacity 0.5s;
+      pointer-events: none;
     }
-
-/* Watermark Styling */
+    .control-btn {
+      color: white;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
     .watermark {
       position: absolute;
       top: 10px;
       right: 10px;
-      z-index: 9;
       color: white;
-      font-size: 18px;
-      opacity: 0.7;
-      pointer-events: none;
-      user-select: none;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 2;
     }
-
- #instructionModal {
+    /* Modal Styles */
+    .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
-      display: none;
+      z-index: 3;
     }
-    #instructionModal div {
-      background: #FFFFFF;
+    .modal {
+      background: #fff;
       padding: 20px;
       border-radius: 10px;
       text-align: center;
+      max-width: 400px;
     }
-
-.blurred {
-    filter: blur(10px);
-  }
-
+    .modal h2 {
+      margin-top: 0;
+    }
+    .modal button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
-  <h1 align="left">STREAMING....</h1>
+  <h1>STREAMING...</h1>
 <body>
-<center>
 
-<div class="video-wrapper" id="videoWrapper">
-<div id="instructionModal">
-  <div>
-    <h2>Instructions</h2>
-    <p>No Sound? Click Pause and Play, then wait a moment.</p>
-    <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
-  </div>
-</div>
-  <!-- OK.ru Video -->
+<div class="video-container" id="videoContainer">
   <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
   
-  <!-- Overlay blocker to disable default controls -->
-  <div class="overlay-blocker"></div>
-
   <!-- Watermark -->
   <div class="watermark">CARATLAND 2025</div>
 
-  <!-- Custom Controls -->
-  <div class="controls" id="customControls">
-    <button id="playPause">Pause</button>
-    <button id="volumeToggle">Mute</button>
-    <button id="fullscreenToggle">Fullscreen</button>
+  <!-- Controls -->
+  <div class="controls" id="controls">
+    <button class="control-btn" id="playPause">⏸️</button>
+    <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
+    <button class="control-btn" id="fullscreen">⛶</button>
   </div>
 </div>
-</center>
+
+<!-- Instruction Modal -->
+<div class="modal-overlay" id="instructionModal">
+  <div class="modal">
+    <h2>Instructions</h2>
+    <p>No sound? Just click ⏸️ two time then wait for a little. </p>
+    <button id="closeModal">Got it!</button>
+  </div>
+</div>
 
 <script>
-  const playPauseBtn = document.getElementById('playPause');
-  const volumeToggleBtn = document.getElementById('volumeToggle');
-  const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
-  const videoWrapper = document.getElementById('videoWrapper');
-  const controls = document.getElementById('customControls');
-  const iframe = document.getElementById('okVideo');
+  const controls = document.getElementById('controls');
+  const playPause = document.getElementById('playPause');
+  const volume = document.getElementById('volume');
+  const fullscreen = document.getElementById('fullscreen');
+  const container = document.getElementById('videoContainer');
+  const modal = document.getElementById('instructionModal');
+  const closeModal = document.getElementById('closeModal');
 
   let isPlaying = true;
-  let isMuted = false;
-  let autoHideTimeout;
+  let hideTimeout;
 
-  /** AUTO HIDE CONTROLS **/
   function showControls() {
-    controls.classList.remove('hidden-controls');
-    clearTimeout(autoHideTimeout);
-    autoHideTimeout = setTimeout(() => {
-      controls.classList.add('hidden-controls');
-    }, 2000); // 2 seconds
+    controls.classList.remove('hidden');
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => controls.classList.add('hidden'), 3000);
   }
 
-  /** FULLSCREEN TOGGLE **/
-  fullscreenToggleBtn.addEventListener('click', () => {
+  // Simulated play/pause toggle
+  playPause.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    playPause.textContent = isPlaying ? '⏸️' : '▶️';
+    showControls();
+  });
+
+  volume.addEventListener('input', () => {
+    showControls();
+  });
+
+  fullscreen.addEventListener('click', () => {
     if (!document.fullscreenElement) {
-      videoWrapper.requestFullscreen().then(() => {
-        if (screen.orientation) {
-          screen.orientation.lock('landscape').catch(() => {});
-        }
-      });
+      container.requestFullscreen();
+      screen.orientation.lock('landscape').catch(() => {});
     } else {
       document.exitFullscreen();
-      if (screen.orientation) {
-        screen.orientation.unlock?.();
-      }
     }
+    showControls();
   });
 
-  /** PLAY/PAUSE (reload workaround) **/
-  playPauseBtn.addEventListener('click', () => {
-    if (isPlaying) {
-      iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0'); // Pause
-      playPauseBtn.textContent = 'Play';
-      isPlaying = false;
-    } else {
-      iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1'); // Play
-      playPauseBtn.textContent = 'Pause';
-      isPlaying = true;
-    }
+  document.addEventListener('mousemove', showControls);
+  document.addEventListener('click', showControls);
+  showControls();
+
+  // Disable iframe default interaction
+  document.getElementById('okVideo').style.pointerEvents = 'none';
+
+  // Instruction modal
+  closeModal.addEventListener('click', () => {
+    modal.style.display = 'none';
   });
-
-  /** VOLUME (we don’t mute iframe; simulate only) **/
-  volumeToggleBtn.addEventListener('click', () => {
-    if (isMuted) {
-      volumeToggleBtn.textContent = 'Mute';
-      isMuted = false;
-    } else {
-      volumeToggleBtn.textContent = 'Unmute';
-      isMuted = true;
-    }
-  });
-
-  /** MOUSEMOVE - SHOW CONTROLS **/
-  document.addEventListener('mousemove', (e) => {
-    if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
-      showControls();
-    }
-  });
-
-  /** FULLSCREEN CHANGE **/
-  document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-      showControls();
-    } else {
-      controls.classList.remove('hidden-controls');
-      clearTimeout(autoHideTimeout);
-    }
-  });
-
- // Disable right-click
-  document.addEventListener('contextmenu', event => event.preventDefault());
-
-  // Disable some keys
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && ['u', 's', 'c', 'p'].includes(e.key.toLowerCase())) {
-      e.preventDefault();
-    }
-    if (e.key === 'F12') {
-      e.preventDefault();
-    }
-  });
-
-  // Blur video when tab is inactive
-  document.addEventListener('visibilitychange', function() {
-    const wrapper = document.getElementById('videoWrapper');
-    if (document.hidden) {
-      wrapper.classList.add('blurred');
-    } else {
-      wrapper.classList.remove('blurred');
-    }
-  });
-
-  // Initial setup for hiding
-  videoWrapper.addEventListener('mousemove', showControls);
 </script>
+
+
   <center><p>================================================================================</p></center>
                 <!-- Badge Code - Do Not Change The Code -->
 <center><a class="hitCounter" href="https://visitorshitcounter.com/" target="_blank" title="Hit counter" data-name="7235ba566051ddb4751e3c2c97ff29f1|5|ip|1|#0373dd|#ffffff|small|ser-hit">Hit Counter</a><script>document.write("<script type='text/javascript' src='https://visitorshitcounter.com/js/hitCounter.js?v="+Date.now()+"'><\/script>");</script></center>
 <!-- Badge Code End Here -->
 <div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
-
 </body>
 </html>
+
