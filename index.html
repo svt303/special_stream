@@ -202,6 +202,29 @@
     }
   });
 
+ // Disable right-click
+  document.addEventListener('contextmenu', event => event.preventDefault());
+
+  // Disable some keys
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && ['u', 's', 'c', 'p'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+    if (e.key === 'F12') {
+      e.preventDefault();
+    }
+  });
+
+  // Blur video when tab is inactive
+  document.addEventListener('visibilitychange', function() {
+    const wrapper = document.getElementById('videoWrapper');
+    if (document.hidden) {
+      wrapper.classList.add('blurred');
+    } else {
+      wrapper.classList.remove('blurred');
+    }
+  });
+
   // Initial setup for hiding
   videoWrapper.addEventListener('mousemove', showControls);
 </script>
