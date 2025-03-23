@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Special Live</title>
-  <body background: gray>
- 
-    <style>
+  <title>Custom Video Player</title>
+  <style>
+    body {
+      background: #888; /* Gray background */
+      display: flex;
+    }
     .player-container {
       position: relative;
       width: 90%;
@@ -14,10 +16,9 @@
       aspect-ratio: 16 / 9;
       background: black;
     }
-    iframe {
+    video {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Prevent interaction with default controls */
     }
     .controls {
       position: absolute;
@@ -81,13 +82,13 @@
     }
   </style>
 </head>
-  <h1>STREAMING....</h1>
+<h1 aling="left">STREAMING....</h1>
 <body>
-<center>
+
 <div class="player-container" id="player">
-  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay"></iframe>
+  <video id="video" src="your-video.mp4" autoplay></video> <!-- Replace with your video file -->
   
-  <div class="watermark">................</div>
+  <div class="watermark">My Watermark</div>
   
   <div class="controls" id="controls">
     <button id="playPause">⏸️</button>
@@ -103,15 +104,14 @@
     <button onclick="closeModal()">Got it!</button>
   </div>
 </div>
-</center>
+
 <script>
   const player = document.getElementById('player');
+  const video = document.getElementById('video');
   const controls = document.getElementById('controls');
   const playPauseBtn = document.getElementById('playPause');
   const volumeBtn = document.getElementById('volume');
   const fullscreenBtn = document.getElementById('fullscreen');
-  let isPlaying = true;
-  let isMuted = false;
   let hideTimeout;
 
   // Auto-hide controls
@@ -127,16 +127,21 @@
   player.addEventListener('click', showControls);
   showControls(); // Initial show
 
-  // Play/Pause toggle (Note: Limited control over iframe, we only simulate behavior visually)
+  // Play/Pause toggle
   playPauseBtn.addEventListener('click', () => {
-    isPlaying = !isPlaying;
-    playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
+    if (video.paused) {
+      video.play();
+      playPauseBtn.textContent = '⏸️';
+    } else {
+      video.pause();
+      playPauseBtn.textContent = '▶️';
+    }
   });
 
-  // Volume toggle (we can't control OK.ru iframe audio, so it's visual)
+  // Volume toggle
   volumeBtn.addEventListener('click', () => {
-    isMuted = !isMuted;
-    volumeBtn.textContent = isMuted ? '🔇' : '🔊';
+    video.muted = !video.muted;
+    volumeBtn.textContent = video.muted ? '🔇' : '🔊';
   });
 
   // Fullscreen toggle
