@@ -83,8 +83,24 @@
     color: white;
   }
   #instructionModal div {
-    background: #222; padding: 20px; border-radius: 10px; text-align: center;
+    background: #FFFFFF; padding: 20px; border-radius: 10px; text-align: center;
   } 
+
+  .live-indicator {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
   </style>
 </head>
 <h1 align="left">STREAMING🔴....</h1>
@@ -100,6 +116,9 @@
   </div>
 </div>
 
+<div style="position: relative; width: 853px; margin: 0 auto;">
+  <div class="live-indicator">🔴 LIVE</div>
+  
 <div class="video-wrapper" id="videoWrapper">
   <!-- OK.ru Video -->
   <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
