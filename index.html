@@ -1,32 +1,37 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="with=device-width, initial-
-        scale=1.0">
-        <title>Special Stream</title>
-       <body bgcolor="gray">
-<link rel="stylesheet" href="styles.css">
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Live</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+     <!-- NAME -->
 <body>
-    <h1 align="left">STREAMING....</h1>
- <div class="video-container">
-       <iframe width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe> 
-        <div class="controls">
+
+    <div class="video-container">
+        <!-- Embedded iframe with controls disabled -->
+        <iframe id="video-iframe" width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1&controls=0" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+        
+        <!-- Custom Controls -->
+        <div class="custom-controls">
             <button id="play-pause">Play</button>
             <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
             <button id="fullscreen">Fullscreen</button>
         </div>
-        <div class="watermark">Your Watermark</div>
-    </div>
-    <script src="script.js"></script>
 
-    <div>
-        <script src="https://cdn.logwork.com/widget/countdown.js"></script>
+        <!-- Watermark -->
+        <div class="watermark"></div>
+    </div>
+
+
+ <script src="https://cdn.logwork.com/widget/countdown.js"></script>
 <a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
 
 <div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
-</div>
-    </body>
+
+    <script src="script.js"></script>
+
+
+</body>
 </html>
