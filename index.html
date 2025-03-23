@@ -10,117 +10,94 @@
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
-<style>
-    
-    .video-container {
+ <style>
+   
+    .video-wrapper {
       position: relative;
       width: 853px;
       height: 480px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
-
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Disable interaction with default OK.ru controls */
+      border: none;
     }
-
     .custom-controls {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: rgba(0, 0, 0, 0.7);
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
-      transition: opacity 0.5s;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px;
+      border-radius: 8px;
       opacity: 1;
+      transition: opacity 0.5s;
     }
-
     .custom-controls.hidden {
       opacity: 0;
       pointer-events: none;
     }
-
-    .control-btn {
-      background: transparent;
+    .custom-controls button {
+      background: none;
       border: none;
       color: white;
-      font-size: 20px;
-      margin: 0 5px;
+      margin: 0 8px;
+      font-size: 18px;
       cursor: pointer;
     }
-
     .live-indicator {
       color: red;
-      margin-left: 10px;
       font-weight: bold;
     }
-   .watermark {
-      position: right;
+    .watermark {
+      position: absolute;
       top: 10px;
       left: 10px;
       color: rgba(255, 255, 255, 0.3);
-      font-size: 12px;
+      font-size: 15px;
       pointer-events: none;
-      user-select: none;
+    }
   </style>
 </head>
 <body>
+  <div class="video-wrapper">
+    <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay" allowfullscreen></iframe>
 
-<div class="video-container" onmousemove="showControls()">
-  <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    <!-- Watermark -->
     <div class="watermark">svtzoneph</div>
-</div>
-  <!-- Custom Controls -->
-  <div class="custom-controls" id="controls">
-    <div>
-      <button class="control-btn" onclick="togglePlay()">⏯️</button>
-      <button class="control-btn" onclick="volumeNotice()">🔊</button>
-      <span class="live-indicator">LIVE</span>
-    </div>
-    <div>
-      <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+
+    <!-- Custom Controls (Visual Only) -->
+    <div class="custom-controls" id="controls">
+      <div>
+        <button>▶️ / ⏸️</button>
+        <span class="live-indicator">● LIVE</span>
+      </div>
+      <div>
+        <button>🔈 Volume</button>
+        <button>🔳 Fullscreen</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  let controls = document.getElementById('controls');
-  let hideTimeout;
+  <script>
+    const controls = document.getElementById('controls');
+    let hideTimeout;
 
-  function showControls() {
-    controls.classList.remove('hidden');
-    clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(() => {
-      controls.classList.add('hidden');
-    }, 3000);
-  }
+    // Auto-hide custom controls
+    const showControls = () => {
+      controls.classList.remove('hidden');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        controls.classList.add('hidden');
+      }, 2000);
+    };
 
-  function togglePlay() {
-    // Reload iframe to simulate play/pause (no real control)
-    const iframe = document.querySelector('iframe');
-    iframe.src = iframe.src;
-  }
-
-  function volumeNotice() {
-    alert("Volume control is not available due to OK.ru iframe restrictions. Use your device volume buttons.");
-  }
-
-  document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-      fullscreenBtn.textContent = 'Exit Fullscreen';
-    } else {
-      fullscreenBtn.textContent = 'Fullscreen';
-    }
-  });
-  // Start auto-hide
-  showControls();
-</script>
+    document.querySelector('.video-wrapper').addEventListener('mousemove', showControls);
+    showControls();
+  </script>
 
 
     <div>
