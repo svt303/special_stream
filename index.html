@@ -114,6 +114,23 @@
     }
   });
 
+// Detect mouse movement (fullscreen or not)
+  document.addEventListener('mousemove', (e) => {
+    if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
+      showControls();
+    }
+  });
+
+  // Auto-hide after entering fullscreen
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      showControls(); // Show controls immediately
+    } else {
+      controls.classList.remove('hidden-controls'); // Always visible when not fullscreen
+      clearTimeout(timeout);
+    }
+  });
+
   // Auto-hide controls after inactivity
   let timeout;
   videoWrapper.addEventListener('mousemove', () => {
