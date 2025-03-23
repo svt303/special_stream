@@ -7,60 +7,45 @@
         <title>Special Stream</title>
        <body bgcolor="darkgray">
  
- <style>
-    
-    .video-wrapper {
-      position: relative;
-      width: 853px;
-      height: 480px;
-      margin: auto;
-      background: whitw;
-    }
+<style>
     iframe {
       width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-    .overlay-blocker {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 5;
+      height: 480px;
+      pointer-events: none; /* Prevent user interaction */
     }
     .controls {
       position: absolute;
-      bottom: 10px; left: 10px;
-      display: flex; gap: 10px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 8px;
-      border-radius: 8px;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
       opacity: 1;
       transition: opacity 0.5s;
+      z-index: 10;
     }
-    .controls button {
-      background: white; border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
+    .control-btn {
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      color: white;
+      padding: 10px;
       cursor: pointer;
-      font-weight: bold;
+      border-radius: 5px;
+      font-size: 16px;
     }
-    .hidden-controls {
-      opacity: 0;
-      transition: opacity 0.5s;
+    .watermark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: white;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      z-index: 10;
     }
-    .watermark { 
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      color: white; 
-      font-size: 18px; 
-      background: rgba(0, 0, 0, 0.5); 
-      padding: 5px 10px; 
-      border-radius: 5px; 
-      pointer-events: none;
-   /* Modal Styles */
-    
-     .instruction-modal {
+    .instruction-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -86,112 +71,69 @@
  <h1 align="left">STREAMING🔴....</h1>
   <center>
 
-    <div class="video-wrapper" id="videoWrapper">
-      <!-- OK.ru Video -->
-      <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-      
-      <!-- Overlay blocker -->
-      <div class="overlay-blocker"></div>
-      
-      <!-- Watermark -->
-      <div class="watermark">CARATLAND 2025</div>
+   <div class="video-container" id="videoContainer">
+  <iframe id="videoIframe" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
 
-      <!-- Custom Controls -->
-      <div class="controls" id="customControls">
-        <button id="playPause">Pause</button>
-        <button id="volumeToggle">Sound On</button>
-        <button id="fullscreenToggle">Fullscreen</button>
-      </div>
-    </div>
-  </center>
+  <div class="watermark">MyWatermark</div>
 
-    <div class="instruction-modal" id="instructionModal">
+  <div class="controls" id="controls">
+    <button class="control-btn" id="playPause">Pause</button>
+    <button class="control-btn" id="volumeToggle">Mute</button>
+    <button class="control-btn" id="fullscreenToggle">Fullscreen</button>
+  </div>
+</div>
+
+<div class="instruction-modal" id="instructionModal">
   <div class="instruction-content">
     <p>Welcome! Use the custom controls below the video to play/pause, adjust volume, or toggle fullscreen. Controls auto-hide for immersive viewing.</p>
     <button class="control-btn" onclick="document.getElementById('instructionModal').classList.add('hide')">Got it</button>
   </div>
 </div>
-  
+
 <script>
- const playPauseBtn = document.getElementById('playPause');
-    const volumeToggleBtn = document.getElementById('volumeToggle');
-    const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
-    const videoWrapper = document.getElementById('videoWrapper');
-    const controls = document.getElementById('customControls');
-    const iframe = document.getElementById('okVideo');
+  const controls = document.getElementById('controls');
+  const container = document.getElementById('videoContainer');
+  const iframe = document.getElementById('videoIframe');
 
-    let isPlaying = true;
-    let isMuted = false;
-    let autoHideTimeout;
+  let isMuted = false;
+  let isPlaying = true;
 
-    // Auto Hide Controls
-    function showControls() {
-      controls.classList.remove('hidden-controls');
-      clearTimeout(autoHideTimeout);
-      autoHideTimeout = setTimeout(() => {
-        controls.classList.add('hidden-controls');
-      }, 3000);
+  // Play/Pause button logic (visual only due to iframe restrictions)
+  document.getElementById('playPause').addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    document.getElementById('playPause').textContent = isPlaying ? 'Pause' : 'Play';
+  });
+
+  // Volume toggle button logic (visual only due to iframe restrictions)
+  document.getElementById('volumeToggle').addEventListener('click', () => {
+    isMuted = !isMuted;
+    document.getElementById('volumeToggle').textContent = isMuted ? 'Unmute' : 'Mute';
+  });
+
+  // Fullscreen toggle
+  document.getElementById('fullscreenToggle').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().then(() => {
+        screen.orientation.lock('landscape').catch(() => {});
+      });
+    } else {
+      document.exitFullscreen();
     }
+  });
 
-    // Fullscreen
-    fullscreenToggleBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        videoWrapper.requestFullscreen().then(() => {
-          if (screen.orientation) {
-            screen.orientation.lock('landscape').catch(() => {});
-          }
-        });
-      } else {
-        document.exitFullscreen();
-        if (screen.orientation) {
-          screen.orientation.unlock?.();
-        }
-      }
-    });
+  // Auto-hide controls
+  let hideTimeout;
+  function resetHideTimer() {
+    controls.style.opacity = 1;
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      controls.style.opacity = 0;
+    }, 3000);
+  }
 
-    // Play/Pause
-    playPauseBtn.addEventListener('click', () => {
-      if (isPlaying) {
-        iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
-        playPauseBtn.textContent = 'Play';
-        isPlaying = false;
-      } else {
-        iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1');
-        playPauseBtn.textContent = 'Pause';
-        isPlaying = true;
-      }
-    });
-
-    // Volume (simulated)
-    volumeToggleBtn.addEventListener('click', () => {
-      if (isMuted) {
-        volumeToggleBtn.textContent = 'Sound On';
-        isMuted = false;
-      } else {
-        volumeToggleBtn.textContent = 'Sound Off';
-        isMuted = true;
-      }
-    });
-
-    // Mousemove - show controls
-    document.addEventListener('mousemove', () => {
-      if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
-        showControls();
-      }
-    });
-
-    // Fullscreen change
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        showControls();
-      } else {
-        controls.classList.remove('hidden-controls');
-        clearTimeout(autoHideTimeout);
-      }
-    });
-
-    videoWrapper.addEventListener('mousemove', showControls);
-  </script>
+  container.addEventListener('mousemove', resetHideTimer);
+  resetHideTimer();
+</script>
   <center><p>================================================================================</p></center>
                 <!-- Badge Code - Do Not Change The Code -->
 <center><a class="hitCounter" href="https://visitorshitcounter.com/" target="_blank" title="Hit counter" data-name="7235ba566051ddb4751e3c2c97ff29f1|5|ip|1|#0373dd|#ffffff|small|ser-hit">Hit Counter</a><script>document.write("<script type='text/javascript' src='https://visitorshitcounter.com/js/hitCounter.js?v="+Date.now()+"'><\/script>");</script></center>
