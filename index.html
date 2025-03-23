@@ -11,93 +11,128 @@
 <body>
     <h1 align="left">STREAMING....</h1>
  <style>
-   
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+
     .video-wrapper {
       position: relative;
       width: 853px;
-      height: 480px;
+      max-width: 95%;
+      aspect-ratio: 16/9;
     }
+
     iframe {
+      position: absolute;
       width: 100%;
       height: 100%;
-      border: none;
     }
-    .custom-controls {
+
+    /* Controls Styling */
+    .controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      justify-content: space-between;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 12px 24px;
+      border-radius: 30px;
       align-items: center;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 8px;
-      border-radius: 8px;
       opacity: 1;
       transition: opacity 0.5s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-    .custom-controls.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .custom-controls button {
-      background: none;
+
+    .controls button {
+      background: rgba(255, 255, 255, 0.9);
       border: none;
-      color: white;
-      margin: 0 8px;
-      font-size: 18px;
+      padding: 12px;
+      border-radius: 50%;
       cursor: pointer;
+      font-size: 18px;
+      transition: 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
+
+    .controls button:hover {
+      background: #f0f0f0;
+      transform: scale(1.1);
+    }
+
     .live-indicator {
       color: red;
       font-weight: bold;
+      margin-left: 10px;
+      font-size: 14px;
+      letter-spacing: 1px;
     }
+
+    /* Watermark Style */
     .watermark {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 15px;
+      position: right;
+      top: 12px;
+      left: 12px;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px 12px;
+      font-size: 16px;
+      border-radius: 8px;
       pointer-events: none;
+      opacity: 0.8;
+      font-family: sans-serif;
     }
   </style>
 </head>
 <body>
-  <div class="video-wrapper">
-    <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay" allowfullscreen></iframe>
 
-    <!-- Watermark -->
-    <div class="watermark">svtzoneph</div>
+<div class="video-wrapper">
+  <!-- Video Embed -->
+  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
 
-    <!-- Custom Controls (Visual Only) -->
-    <div class="custom-controls" id="controls">
-      <div>
-        <button>▶️ / ⏸️</button>
-        <span class="live-indicator">● LIVE</span>
-      </div>
-      <div>
-        <button>🔈 Volume</button>
-        <button>🔳 Fullscreen</button>
-      </div>
-    </div>
+  <!-- Watermark -->
+  <div class="watermark">SEVENTEEN ZONE PH</div>
+
+  <!-- Custom Controls -->
+  <div id="customControls" class="controls">
+    <button id="playPause">▶️</button>
+    <button id="volume">🔊</button>
+    <button id="fullscreen">⛶</button>
+    <span class="live-indicator">● LIVE</span>
   </div>
+</div>
 
-  <script>
-    const controls = document.getElementById('controls');
-    let hideTimeout;
+<script>
+  const controls = document.getElementById("customControls");
+  let timeout;
 
-    // Auto-hide custom controls
-    const showControls = () => {
-      controls.classList.remove('hidden');
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => {
-        controls.classList.add('hidden');
-      }, 2000);
-    };
+  // Auto-hide controls after 3 seconds
+  function showControls() {
+    controls.style.opacity = 1;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      controls.style.opacity = 0;
+    }, 3000);
+  }
 
-    document.querySelector('.video-wrapper').addEventListener('mousemove', showControls);
-    showControls();
-  </script>
+  // Show controls on mouse move
+  document.querySelector('.video-wrapper').addEventListener('mousemove', showControls);
+  showControls(); // Initial call
+
+  // Dummy button actions
+  document.getElementById("playPause").addEventListener('click', () => {
+    alert("Play/Pause not supported on iframe.");
+  });
+  document.getElementById("volume").addEventListener('click', () => {
+    alert("Volume control not supported on iframe.");
+  });
+  document.getElementById("fullscreen").addEventListener('click', () => {
+    alert("Fullscreen control not supported on iframe.");
+  });
+</script>
+
 
 
     <div>
