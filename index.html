@@ -10,130 +10,123 @@
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
- <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-
-    .video-wrapper {
-      position: relative;
-      width: 853px;
-      max-width: 95%;
-      aspect-ratio: 16/9;
-    }
-
-    iframe {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Controls Styling */
-    .controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 15px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 12px 24px;
-      border-radius: 30px;
-      align-items: center;
-      opacity: 1;
-      transition: opacity 0.5s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .controls button {
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      padding: 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      transition: 0.3s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .controls button:hover {
-      background: #f0f0f0;
-      transform: scale(1.1);
-    }
-
-    .live-indicator {
-      color: red;
-      font-weight: bold;
-      margin-left: 10px;
-      font-size: 14px;
-      letter-spacing: 1px;
-    }
-
-    /* Watermark Style */
-    .watermark {
-      position: right;
-      top: 12px;
-      left: 12px;
-      color: white;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 6px 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      pointer-events: none;
-      opacity: 0.8;
-      font-family: sans-serif;
-    }
-  </style>
+<style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+        .video-container {
+            position: relative;
+            width: 853px;
+            height: 480px;
+        }
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+        .controls.hidden {
+            opacity: 0;
+        }
+        .controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .live-indicator {
+            color: red;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .watermark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 20px;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
+    <div class="video-container">
+        <iframe id="video" width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+        <div class="controls" id="controls">
+            <button id="playPauseBtn">⏯</button>
+            <button id="volumeBtn">🔊</button>
+            <button id="fullscreenBtn">⛶</button>
+            <span class="live-indicator">LIVE</span>
+        </div>
+        <div class="watermark">SEVENTEEN ZONE PH</div>
+    </div>
 
-<div class="video-wrapper">
-  <!-- Video Embed -->
-  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+    <script>
+        const video = document.getElementById('video');
+        const controls = document.getElementById('controls');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-  <!-- Watermark -->
-  <div class="watermark">SEVENTEEN ZONE PH</div>
+        let isControlsVisible = true;
+        let hideControlsTimeout;
 
-  <!-- Custom Controls -->
-  <div id="customControls" class="controls">
-    <button id="playPause">▶️</button>
-    <button id="volume">🔊</button>
-    <button id="fullscreen">⛶</button>
-    <span class="live-indicator">● LIVE</span>
-  </div>
-</div>
+        const hideControls = () => {
+            if (hideControlsTimeout) clearTimeout(hideControlsTimeout);
+            hideControlsTimeout = setTimeout(() => {
+                controls.classList.add('hidden');
+                isControlsVisible = false;
+            }, 3000);
+        };
 
-<script>
-  const controls = document.getElementById("customControls");
-  let timeout;
+        const showControls = () => {
+            controls.classList.remove('hidden');
+            isControlsVisible = true;
+            hideControls();
+        };
 
-  // Auto-hide controls after 3 seconds
-  function showControls() {
-    controls.style.opacity = 1;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      controls.style.opacity = 0;
-    }, 3000);
-  }
+        video.addEventListener('mousemove', showControls);
+        controls.addEventListener('mousemove', showControls);
 
-  // Show controls on mouse move
-  document.querySelector('.video-wrapper').addEventListener('mousemove', showControls);
-  showControls(); // Initial call
+        playPauseBtn.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.textContent = '⏸';
+            } else {
+                video.pause();
+                playPauseBtn.textContent = '⏯';
+            }
+        });
 
-  // Dummy button actions
-  document.getElementById("playPause").addEventListener('click', () => {
-    alert("Play/Pause not supported on iframe.");
-  });
-  document.getElementById("volume").addEventListener('click', () => {
-    alert("Volume control not supported on iframe.");
-  });
-  document.getElementById("fullscreen").addEventListener('click', () => {
-    alert("Fullscreen control not supported on iframe.");
-  });
-</script>
+        volumeBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            volumeBtn.textContent = video.muted ? '🔇' : '🔊';
+        });
 
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                video.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
 
+        hideControls();
+    </script>
 
     <div>
         <script src="https://cdn.logwork.com/widget/countdown.js"></script>
