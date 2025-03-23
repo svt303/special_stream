@@ -45,32 +45,34 @@
       border-radius: 5px;
       z-index: 10;
     }
-    .instruction-modal {
+     #instructionModal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
+      background: rgba(255, 255, 255, 1);
+      display: flex; justify-content: center; align-items: center;
     }
-    .instruction-content {
-      background: #222;
+    #instructionModal div {
+      background: #FFFFFF;
       padding: 20px;
       border-radius: 10px;
-      max-width: 90%;
       text-align: center;
     }
-    .hide { display: none; }
-  </style>
    
 </head>
 <body>
  <h1 align="left">STREAMING🔴....</h1>
   
   <center>
+     <div id="instructionModal">
+      <div>
+        <h2>Instructions</h2>
+        <p>No Sound?</p>
+        <p>Just click Pause and Play then wait a little</p>
+        <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
+      </div>
+    </div>
+
    <div class="video-container" id="videoContainer">
   <iframe id="videoIframe" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
 
@@ -83,12 +85,6 @@
   </div>
 </div>
 
-<div class="instruction-modal" id="instructionModal">
-  <div class="instruction-content">
-    <p>Welcome! Use the custom controls below the video to play/pause, adjust volume, or toggle fullscreen. Controls auto-hide for immersive viewing.</p>
-    <button class="control-btn" onclick="document.getElementById('instructionModal').classList.add('hide')">Got it</button>
-  </div>
-</div>
 </center>
   
 <script>
