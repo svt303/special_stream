@@ -2,152 +2,157 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Special Live</title>
   <style>
     body {
-      background: #888;
-      display: flex;
-      height: 100vh;
+      font-family: Arial, sans-serif;
       margin: 0;
+      padding: 0;
+      background: gray;
+      color: #fff;
     }
     .video-container {
       position: relative;
       width: 853px;
       height: 480px;
-      background: black;
+      margin: 20px auto;
     }
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* disable interaction with default controls */
+      border: none;
     }
-    .controls {
+    .custom-controls {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 10px;
+      left: 10px;
       display: flex;
       gap: 10px;
       opacity: 1;
       transition: opacity 0.5s;
     }
-    .controls.hidden {
+    .custom-controls.hidden {
       opacity: 0;
     }
-    .controls button {
-      padding: 10px 15px;
-      font-size: 16px;
-      background: rgba(0,0,0,0.7);
-      color: white;
+    .custom-controls button {
+      background: rgba(0, 0, 0, 0.7);
       border: none;
-      border-radius: 5px;
+      color: #fff;
+      padding: 10px;
       cursor: pointer;
+      border-radius: 5px;
     }
     .watermark {
       position: absolute;
       top: 10px;
-      left: 10px;
-      color: white;
-      background: rgba(0,0,0,0.6);
-      padding: 5px 10px;
-      font-weight: bold;
-      border-radius: 5px;
+      right: 10px;
+      font-size: 20px;
+      opacity: 0.7;
     }
-    .instructions {
-      position: absolute;
+    #instructionsModal {
+      display: none;
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      display: none;
-    }
-    .instructions button {
-      margin-top: 10px;
       background: white;
-      color: black;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      color: #000;
+      z-index: 1000;
+    }
+    #instructionsModal h2 {
+      margin-top: 0;
+    }
+    #instructionsModal button {
+      background: #007bff;
+      color: #fff;
       border: none;
-      padding: 5px 10px;
+      padding: 10px 20px;
       cursor: pointer;
     }
   </style>
 </head>
-<h1 align="left">STREAMING....</h1>
+<h1 align="left">STREAMING.....</h1>
 <body>
-<center>
-  <div class="video-container" id="videoContainer">
-    <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    
-    <div class="watermark">CARATLAND 2025</div>
-    
-    <div class="controls" id="controls">
-      <button id="fullscreen">Fullscreen</button>
-      <button id="instructionsBtn">Instructions</button>
+  <div class="video-container">
+    <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allowfullscreen></iframe>
+    <div class="custom-controls" id="customControls">
+      <button id="playPauseBtn">Play/Pause</button>
+      <button id="volumeBtn">Toggle Volume</button>
+      <button id="fullscreenBtn">Fullscreen</button>
     </div>
-</center>
-
-    <div class="instructions" id="instructionsModal">
-      <p>Use the custom controls to play/pause, mute/unmute, or toggle fullscreen.</p>
-      <button id="closeInstructions">Close</button>
-    </div>
+    <div class="watermark">Y</div>
   </div>
 
-<script>
-  const container = document.getElementById('videoContainer');
-  const controls = document.getElementById('controls');
-  const instructions = document.getElementById('instructionsModal');
+  <button id="showModalBtn" style="margin: 20px auto; display: block;">Show Instructions</button>
 
-  let isPaused = false;
-  let isMuted = false;
+  <div id="instructionsModal">
+    <h2>Instructions</h2>
+    <p>Use the custom buttons to control the video:</p>
+    <ul>
+      <li><strong>Play/Pause:</strong> Start or pause the video.</li>
+      <li><strong>Toggle Volume:</strong> Mute or unmute the audio.</li>
+      <li><strong>Fullscreen:</strong> Enter or exit fullscreen mode.</li>
+    </ul>
+    <button id="closeModalBtn">Close</button>
+  </div>
 
-  // Fake play/pause since iframe control is locked
-  document.getElementById('playPause').onclick = () => {
-    alert('Play/Pause function not supported by OK.ru API, this is visual only!');
-    isPaused = !isPaused;
-    document.getElementById('playPause').innerText = isPaused ? 'Play' : 'Pause';
-  };
+  <script>
+    // Auto-hide controls after inactivity
+    let inactivityTimer;
+    const customControls = document.getElementById('customControls');
 
-  // Fake volume
-  document.getElementById('volume').onclick = () => {
-    alert('Mute/Unmute function not supported by OK.ru API, this is visual only!');
-    isMuted = !isMuted;
-    document.getElementById('volume').innerText = isMuted ? 'Unmute' : 'Mute';
-  };
-
-  // Fullscreen with landscape
-  document.getElementById('fullscreen').onclick = () => {
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().then(() => {
-        screen.orientation.lock('landscape').catch(() => {});
-      });
-    } else {
-      document.exitFullscreen();
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      customControls.classList.remove('hidden');
+      inactivityTimer = setTimeout(() => {
+        customControls.classList.add('hidden');
+      }, 3000); // Hide after 3 seconds of inactivity
     }
-  };
 
-  // Instructions
-  document.getElementById('instructionsBtn').onclick = () => {
-    instructions.style.display = 'block';
-  };
-  document.getElementById('closeInstructions').onclick = () => {
-    instructions.style.display = 'none';
-  };
+    document.addEventListener('mousemove', resetInactivityTimer);
+    document.addEventListener('click', resetInactivityTimer);
 
-  // Auto-hide controls after inactivity
-  let timeout;
-  const showControls = () => {
-    controls.classList.remove('hidden');
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      controls.classList.add('hidden');
-    }, 3000);
-  };
-  container.addEventListener('mousemove', showControls);
-  container.addEventListener('click', showControls);
-  showControls();
+    // Fullscreen toggle
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const videoContainer = document.querySelector('.video-container');
 
-</script>
+    fullscreenBtn.addEventListener('click', () => {
+      if (videoContainer.requestFullscreen) {
+        videoContainer.requestFullscreen();
+      } else if (videoContainer.webkitRequestFullscreen) { // Safari
+        videoContainer.webkitRequestFullscreen();
+      } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+        videoContainer.msRequestFullscreen();
+      }
+    });
+
+    // Instructions modal
+    const showModalBtn = document.getElementById('showModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const instructionsModal = document.getElementById('instructionsModal');
+
+    showModalBtn.addEventListener('click', () => {
+      instructionsModal.style.display = 'block';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      instructionsModal.style.display = 'none';
+    });
+
+    // Simulate play/pause and volume toggle (requires access to iframe content)
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const volumeBtn = document.getElementById('volumeBtn');
+
+    playPauseBtn.addEventListener('click', () => {
+      alert('Play/Pause functionality requires access to the iframe content.');
+    });
+
+    volumeBtn.addEventListener('click', () => {
+      alert('Volume toggle functionality requires access to the iframe content.');
+    });
+  </script>
 </body>
 </html>
