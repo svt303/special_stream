@@ -8,13 +8,13 @@
        <body bgcolor="darkgray">
  
  <style>
-    body { background-color: darkgray; margin: 0; }
+    
     .video-wrapper {
       position: relative;
       width: 853px;
       height: 480px;
       margin: auto;
-      background: black;
+      background: whitw;
     }
     iframe {
       width: 100%;
@@ -59,51 +59,39 @@
       border-radius: 5px; 
       pointer-events: none;
    /* Modal Styles */
-    .modal-overlay {
+    
+     .instruction-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.8);
+      color: white;
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 3;
+      justify-content: center;
+      z-index: 20;
     }
-    .modal {
-      background: #fff;
+    .instruction-content {
+      background: #222;
       padding: 20px;
       border-radius: 10px;
+      max-width: 90%;
       text-align: center;
-      max-width: 400px;
     }
-    .modal h2 {
-      margin-top: 0;
-    }
-    .modal button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    .hide { display: none; }
   </style>
    
 </head>
-  <h1>STREAMING...</h1>
 <body>
  <h1 align="left">STREAMING🔴....</h1>
   <center>
 
-    <div id="instructionModal">
-      <div>
-        <h2>Instructions</h2>
-        <p>No Sound?</p>
-        <p>Just click Pause and Play then wait a little</p>
-        <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
-      </div>
-    </div>
+    <div class="instruction-modal" id="instructionModal">
+  <div class="instruction-content">
+    <p>Welcome! Use the custom controls below the video to play/pause, adjust volume, or toggle fullscreen. Controls auto-hide for immersive viewing.</p>
+    <button class="control-btn" onclick="document.getElementById('instructionModal').classList.add('hide')">Got it</button>
+  </div>
+</div>
 
     <div class="video-wrapper" id="videoWrapper">
       <!-- OK.ru Video -->
@@ -113,7 +101,7 @@
       <div class="overlay-blocker"></div>
       
       <!-- Watermark -->
-      <div class="watermark">DAY 2 CL25</div>
+      <div class="watermark">CARATLAND 2025</div>
 
       <!-- Custom Controls -->
       <div class="controls" id="customControls">
