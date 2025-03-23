@@ -7,7 +7,9 @@
         <title>Special Stream</title>
        <body bgcolor="darkgray">
 
-    <style>
+</head>
+<body>
+<style>
     body {
       background: #000;
       display: flex;
@@ -27,7 +29,7 @@
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Block default OK.ru controls */
+      pointer-events: none; /* Disable interaction with OK.ru default controls */
     }
 
     .controls {
@@ -58,15 +60,12 @@
       background: transparent;
     }
 
-    /* Auto-hide */
+    /* Auto-hide effect */
     .controls.hidden {
       opacity: 0;
       pointer-events: none;
     }
   </style>
-</head>
-<body>
-
 <div id="videoContainer" onmousemove="showControls()">
   <iframe id="videoFrame"
     src="https://ok.ru/videoembed/9252831698648?autoplay=1"
@@ -88,27 +87,27 @@
   let controls = document.getElementById('customControls');
   let hideTimeout;
 
-  // Auto-hide controls after inactivity
+  // Auto-hide controls
   function showControls() {
     controls.classList.remove('hidden');
     clearTimeout(hideTimeout);
     hideTimeout = setTimeout(() => {
       controls.classList.add('hidden');
-    }, 3000); // 3 seconds
+    }, 3000);
   }
 
-  // Simulate Play/Pause by reloading iframe
+  // Fake Play/Pause: reload iframe (since we can't access real playback)
   function togglePlayPause() {
     const iframe = document.getElementById('videoFrame');
     iframe.src = iframe.src;
   }
 
-  // Volume notice (can't control volume due to iframe restriction)
+  // Inform user about volume limitation
   function volumeNotice() {
-    alert("Volume control is not supported due to browser restrictions. Please use your device's volume buttons.");
+    alert("Sorry, browser restrictions prevent controlling OK.ru video volume directly. Please use your device volume buttons.");
   }
 
-  // Fullscreen toggle
+  // Fullscreen for container
   function enterFullscreen() {
     const container = document.getElementById('videoContainer');
     if (container.requestFullscreen) {
