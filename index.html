@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Special Live</title>
+  <title>Custom OK.ru Player</title>
   <style>
     body {
       margin: 0;
       background: #2c2c2c;
       display: flex;
       justify-content: center;
-      align-items: up, center;
+      align-items: center;
       height: 100vh;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
     }
-    .video-container {
+    .player-container {
       position: relative;
       width: 90%;
       max-width: 900px;
@@ -28,6 +28,7 @@
     iframe {
       width: 100%;
       height: 100%;
+      pointer-events: none; /* lock default controls */
     }
     .controls {
       position: absolute;
@@ -114,10 +115,10 @@
 </head>
 <body>
 
-<div class="video-container" id="videoContainer">
+<div class="player-container" id="player">
   <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay"></iframe>
   
-  <div class="watermark">Special Live</div>
+  <div class="watermark">My Watermark</div>
   
   <div class="controls" id="controls">
     <button id="playPause">⏸️</button>
@@ -140,10 +141,10 @@
   const playPauseBtn = document.getElementById('playPause');
   const volumeBtn = document.getElementById('volume');
   const fullscreenBtn = document.getElementById('fullscreen');
+  const iframe = player.querySelector('iframe');
   let isPlaying = true;
   let isMuted = false;
   let hideTimeout;
-  const iframe = player.querySelector('iframe');
 
   function showControls() {
     controls.style.opacity = 1;
@@ -160,14 +161,13 @@
   playPauseBtn.addEventListener('click', () => {
     isPlaying = !isPlaying;
     playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
+    // Reload iframe to simulate replay
     if (isPlaying) {
       const src = iframe.src;
       iframe.src = '';
       setTimeout(() => {
         iframe.src = src;
       }, 100);
-    } else {
-      iframe.style.pointerEvents = 'none';
     }
   });
 
@@ -180,7 +180,7 @@
     if (!document.fullscreenElement) {
       player.requestFullscreen().then(() => {
         screen.orientation.lock('landscape').catch(() => {});
-      }).catch(err => {});
+      }).catch(() => {});
     } else {
       document.exitFullscreen();
     }
