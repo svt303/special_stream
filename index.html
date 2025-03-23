@@ -1,49 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Special Live</title>
   <style>
     body {
       margin: 0;
-      background-color: white;
-      display: flex;
+      background: gray;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      overflow: hidden;
     }
-    .container {
+    .video-container {
       position: relative;
       width: 853px;
       height: 480px;
-      background: #000;
+      background: black;
     }
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Lock default controls */
+      pointer-events: none; /* Disable default interaction */
     }
     .controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
+      bottom: 8px;
+      left: 3px;
+      right: 17px;
       display: flex;
-      justify-content: space-between;
+      justify-content: left;
+      align-items: center;
       opacity: 1;
       transition: opacity 0.5s;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      border-radius: 10px;
-      z-index: 5;
     }
     .controls.hidden {
       opacity: 0;
     }
     .controls button {
-      background: #fff;
+      background: rgba(0,0,0,0.6);
       border: none;
-      padding: 8px 12px;
+      color: white;
+      padding: 10px;
       margin: 0 5px;
       border-radius: 5px;
       cursor: pointer;
@@ -51,105 +50,113 @@
     .watermark {
       position: absolute;
       top: 10px;
-      right: 10px;
+      left: 10px;
       color: white;
+      font-weight: bold;
       opacity: 0.7;
-      font-size: 18px;
       pointer-events: none;
-      z-index: 4;
     }
-    .instructions-modal {
+    .instructions {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.8);
       color: white;
-      font-size: 20px;
-      z-index: 10;
-      flex-direction: column;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
     }
-    .instructions-modal button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    .instructions button {
+      margin-top: 10px;
     }
   </style>
 </head>
-  <h1 align="left">STREAMING....</h1>
 <body>
-
-<div class="container" id="videoContainer">
-  <iframe id="videoFrame" src="//ok.ru/videoembed/9252831698648?autoplay=1&muted=0" frameborder="0" allow="autoplay; fullscreen"></iframe>
+<h1 align="left" >STREAMING....</h1>
   
-  <div class="watermark">CARATLAND 2025</div>
+<div class="video-container" id="videoContainer">
+  <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  
+  <div class="watermark">CARATLAND2025</div>
 
   <div class="controls" id="controls">
     <button id="playPause">Pause</button>
     <button id="volume">Mute</button>
     <button id="fullscreen">Fullscreen</button>
+    <button id="instructionsBtn">Instructions</button>
   </div>
 
-  <div class="instructions-modal" id="instructions">
-    <div>Welcome! Use the buttons to control video. Tap anywhere to unmute.</div>
-    <button onclick="closeInstructions()">Got it!</button>
+  <div class="instructions" id="instructions">
+    <p>Click buttons to control video. Double-tap Fullscreen for landscape.</p>
+    <button id="closeInstructions">Close</button>
   </div>
 </div>
 
 <script>
-  const container = document.getElementById('videoContainer');
-  const controls = document.getElementById('controls');
-  const iframe = document.getElementById('videoFrame');
+  const iframe = document.getElementById('okVideo');
   const playPauseBtn = document.getElementById('playPause');
   const volumeBtn = document.getElementById('volume');
   const fullscreenBtn = document.getElementById('fullscreen');
+  const instructions = document.getElementById('instructions');
+  const instructionsBtn = document.getElementById('instructionsBtn');
+  const closeInstructions = document.getElementById('closeInstructions');
+  const controls = document.getElementById('controls');
+  const videoContainer = document.getElementById('videoContainer');
 
-  let hideTimeout;
-  const showControls = () => {
-    controls.classList.remove('hidden');
-    clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(() => controls.classList.add('hidden'), 3000);
-  };
-  container.addEventListener('mousemove', showControls);
-  showControls();
-
-  let isPaused = false;
-  playPauseBtn.onclick = () => {
-    iframe.contentWindow.postMessage({ method: 'playPause' }, '*');
-    isPaused = !isPaused;
-    playPauseBtn.textContent = isPaused ? 'Play' : 'Pause';
-  };
-
+  let isPlaying = true;
   let isMuted = false;
-  volumeBtn.onclick = () => {
-    iframe.contentWindow.postMessage({ method: isMuted ? 'unmute' : 'mute' }, '*');
-    isMuted = !isMuted;
-    volumeBtn.textContent = isMuted ? 'Unmute' : 'Mute';
+  
+  // Play/Pause Button
+  playPauseBtn.onclick = () => {
+    if (isPlaying) {
+      iframe.contentWindow.postMessage('{"method":"pause"}', '*');
+      playPauseBtn.textContent = 'Play';
+    } else {
+      iframe.contentWindow.postMessage('{"method":"play"}', '*');
+      playPauseBtn.textContent = 'Pause';
+    }
+    isPlaying = !isPlaying;
   };
 
+  // Volume Mute/Unmute
+  volumeBtn.onclick = () => {
+    if (isMuted) {
+      iframe.contentWindow.postMessage('{"method":"unmute"}', '*');
+      volumeBtn.textContent = 'Mute';
+    } else {
+      iframe.contentWindow.postMessage('{"method":"mute"}', '*');
+      volumeBtn.textContent = 'Unmute';
+    }
+    isMuted = !isMuted;
+  };
+
+  // Fullscreen Toggle
   fullscreenBtn.onclick = () => {
     if (!document.fullscreenElement) {
-      container.requestFullscreen().then(() => {
-        screen.orientation.lock('landscape').catch(() => {});
-      });
-      fullscreenBtn.textContent = 'Exit Fullscreen';
+      videoContainer.requestFullscreen();
     } else {
       document.exitFullscreen();
-      fullscreenBtn.textContent = 'Fullscreen';
     }
   };
 
-  function closeInstructions() {
-    document.getElementById('instructions').style.display = 'none';
-  }
+  // Auto-Hide Controls
+  let timeout;
+  const showControls = () => {
+    controls.classList.remove('hidden');
+    clearTimeout(timeout);
+    timeout = setTimeout(() => controls.classList.add('hidden'), 3000);
+  };
+  videoContainer.addEventListener('mousemove', showControls);
+  showControls();
 
-  container.addEventListener('click', () => {
-    iframe.contentWindow.postMessage({ method: 'unmute' }, '*');
-  });
+  // Instructions Modal
+  instructionsBtn.onclick = () => {
+    instructions.style.display = 'block';
+  };
+  closeInstructions.onclick = () => {
+    instructions.style.display = 'none';
+  };
 </script>
 
 </body>
