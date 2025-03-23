@@ -10,18 +10,29 @@
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
- <style>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
     .video-container {
       position: relative;
       width: 853px;
       height: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* disable default control interaction */
+      pointer-events: none; /* Disable interaction with default OK.ru controls */
     }
 
     .custom-controls {
@@ -33,7 +44,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 10px;
+      padding: 8px 12px;
       transition: opacity 0.5s;
       opacity: 1;
     }
@@ -52,10 +63,6 @@
       cursor: pointer;
     }
 
-    .volume-slider {
-      width: 80px;
-    }
-
     .live-indicator {
       color: red;
       margin-left: 10px;
@@ -64,10 +71,9 @@
   </style>
 </head>
 <body>
-<center>
+
 <div class="video-container" onmousemove="showControls()">
   <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    
 
   <!-- Custom Controls -->
   <div class="custom-controls" id="controls">
@@ -95,13 +101,13 @@
   }
 
   function togglePlay() {
-    // We can't control the iframe directly, so reload (simulate play/pause)
+    // Reload iframe to simulate play/pause (no real control)
     const iframe = document.querySelector('iframe');
     iframe.src = iframe.src;
   }
 
   function volumeNotice() {
-    alert("Unfortunately, OK.ru video volume can't be controlled due to browser restrictions.\nPlease use device volume buttons.");
+    alert("Volume control is not available due to OK.ru iframe restrictions. Use your device volume buttons.");
   }
 
   function toggleFullscreen() {
@@ -117,8 +123,8 @@
 
   // Start auto-hide
   showControls();
-</center>
 </script>
+
 
 
     <div>
