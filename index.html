@@ -7,7 +7,7 @@
         <title>Special Stream</title>
        <body bgcolor="darkgray">
 
-      <style>
+    <style>
     body {
       background: #000;
       display: flex;
@@ -27,7 +27,7 @@
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none;
+      pointer-events: none; /* Block default OK.ru controls */
     }
 
     .controls {
@@ -58,7 +58,7 @@
       background: transparent;
     }
 
-    /* Auto-hide effect */
+    /* Auto-hide */
     .controls.hidden {
       opacity: 0;
       pointer-events: none;
@@ -68,14 +68,19 @@
 <body>
 
 <div id="videoContainer" onmousemove="showControls()">
-  <iframe id="videoFrame" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame"
+    src="https://ok.ru/videoembed/9252831698648?autoplay=1"
+    frameborder="0"
+    allow="autoplay; fullscreen"
+    allowfullscreen>
+  </iframe>
 
   <!-- Custom Controls -->
   <div class="controls" id="customControls">
     <button onclick="togglePlayPause()">Pause/Play</button>
-    <button onclick="enterFullscreen()">Fullscreen</button>
     <label style="color: white;">Volume:</label>
     <input type="range" min="0" max="100" value="100" onchange="volumeNotice()" />
+    <button onclick="enterFullscreen()">Fullscreen</button>
   </div>
 </div>
 
@@ -89,13 +94,18 @@
     clearTimeout(hideTimeout);
     hideTimeout = setTimeout(() => {
       controls.classList.add('hidden');
-    }, 3000);
+    }, 3000); // 3 seconds
   }
 
-  // Simulate Pause/Play by reloading iframe
+  // Simulate Play/Pause by reloading iframe
   function togglePlayPause() {
     const iframe = document.getElementById('videoFrame');
     iframe.src = iframe.src;
+  }
+
+  // Volume notice (can't control volume due to iframe restriction)
+  function volumeNotice() {
+    alert("Volume control is not supported due to browser restrictions. Please use your device's volume buttons.");
   }
 
   // Fullscreen toggle
@@ -110,12 +120,7 @@
     }
   }
 
-  // Volume Notice (Phone-Friendly)
-  function volumeNotice() {
-    alert("To adjust volume, please use your phone's physical volume buttons or system settings. Browser restrictions prevent controlling OK.ru video volume directly.");
-  }
-
-  // Start auto-hide timer
+  // Start auto-hide
   showControls();
 </script>
          <h3>DAY 2 | 2025 FAN MEETING SEVENTEEN IN CARTLAND</h3> 
