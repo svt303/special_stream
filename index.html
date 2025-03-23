@@ -6,125 +6,21 @@
         scale=1.0">
         <title>Special Stream</title>
        <body bgcolor="gray">
+<link rel="stylesheet" href="styles.css">
 
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
- <style>
-        body, html {
-            justify-content: center;
-            
-        }
-        .video-container {
-            position: relative;
-            width: 853px;
-            height: 480px;
-        }
-        /* Hide default controls */
-        iframe {
-            pointer-events: none; /* Disable interaction with iframe */
-        }
-        .controls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            opacity: 1;
-            transition: opacity 0.5s;
-            pointer-events: all; /* Enable interaction with custom controls */
-        }
-        .controls.hidden {
-            opacity: 0;
-        }
-        .controls button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-        .live-indicator {
-            color: red;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="video-container">
-        <!-- Embedded iframe with autoplay and no controls -->
-        <iframe id="video" width="853" height="480" src="//ok.ru/videoembed/9252831698648?autoplay=1&controls=0" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-        
-        <!-- Custom controls -->
-        <div class="controls" id="controls">
-            <button id="playPauseBtn">⏯</button>
-            <button id="volumeBtn">🔊</button>
-            <button id="fullscreenBtn">⛶</button>
-            <span class="live-indicator">LIVE</span>
+ <div class="video-container">
+        <video id="custom-video" src="//ok.ru/videoembed/9252831698648" autoplay></video>
+        <div class="controls">
+            <button id="play-pause">Play</button>
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+            <button id="fullscreen">Fullscreen</button>
         </div>
+        <div class="watermark">Your Watermark</div>
     </div>
-
-    <script>
-        const video = document.getElementById('video');
-        const controls = document.getElementById('controls');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const volumeBtn = document.getElementById('volumeBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-        let isControlsVisible = true;
-        let hideControlsTimeout;
-
-        const hideControls = () => {
-            if (hideControlsTimeout) clearTimeout(hideControlsTimeout);
-            hideControlsTimeout = setTimeout(() => {
-                controls.classList.add('hidden');
-                isControlsVisible = false;
-            }, 3000);
-        };
-
-        const showControls = () => {
-            controls.classList.remove('hidden');
-            isControlsVisible = true;
-            hideControls();
-        };
-
-        video.addEventListener('mousemove', showControls);
-        controls.addEventListener('mousemove', showControls);
-
-        playPauseBtn.addEventListener('click', () => {
-            if (video.paused) {
-                video.play();
-                playPauseBtn.textContent = '⏸';
-            } else {
-                video.pause();
-                playPauseBtn.textContent = '⏯';
-            }
-        });
-
-        volumeBtn.addEventListener('click', () => {
-            video.muted = !video.muted;
-            volumeBtn.textContent = video.muted ? '🔇' : '🔊';
-        });
-
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                video.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        });
-
-        // Ensure audio is not muted initially
-        video.muted = false;
-
-        hideControls();
-    </script>
+    <script src="script.js"></script>
 
     <div>
         <script src="https://cdn.logwork.com/widget/countdown.js"></script>
