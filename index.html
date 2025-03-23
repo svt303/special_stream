@@ -18,8 +18,8 @@
     }
 
     iframe {
-      width: 100%;
-      height: 100%;
+      width: 853;
+      height: 480;
       pointer-events: none; /* Disable interaction with iframe (blocks default controls) */
     }
 
@@ -59,25 +59,43 @@
 </div>
 
 <script>
-  function reloadVideo() {
-    const iframe = document.getElementById('videoFrame');
-    iframe.src = iframe.src; // Reload iframe (simulates pause/play)
+  let controls = document.getElementById('customControls');
+  let hideTimeout;
+
+  // Auto-hide controls after inactivity
+  function showControls() {
+    controls.classList.remove('hidden');
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      controls.classList.add('hidden');
+    }, 3000); // Auto-hide after 3 seconds
   }
 
+  // Simulate Pause/Play by reloading iframe
+  function togglePlayPause() {
+    const iframe = document.getElementById('videoFrame');
+    iframe.src = iframe.src;
+  }
+
+  // Volume button alert
+  function volumeAlert() {
+    alert("Volume control cannot be applied due to cross-origin policy.");
+  }
+
+  // Fullscreen toggle
   function enterFullscreen() {
     const container = document.getElementById('videoContainer');
     if (container.requestFullscreen) {
       container.requestFullscreen();
-    } else if (container.webkitRequestFullscreen) { /* Safari */
+    } else if (container.webkitRequestFullscreen) {
       container.webkitRequestFullscreen();
-    } else if (container.msRequestFullscreen) { /* IE11 */
+    } else if (container.msRequestFullscreen) {
       container.msRequestFullscreen();
     }
   }
 
-  function muteAlert() {
-    alert("Volume control is blocked due to iframe cross-origin policy!");
-  }
+  // Start auto-hide timer
+  showControls();
 </script>
          <h3>DAY 2 | 2025 FAN MEETING SEVENTEEN IN CARTLAND</h3> 
                       <h3>====================================================================================</h3> 
