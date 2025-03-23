@@ -1,139 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Video Player</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #000;
-        }
-        .video-container {
-            position: relative;
-            width: 853px;
-            height: 480px;
-            overflow: hidden;
-        }
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-        }
-        .controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            opacity: 1;
-            transition: opacity 0.5s;
-        }
-        .controls.hide {
-            opacity: 0;
-        }
-        .controls button {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .watermark {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: #fff;
-            font-size: 16px;
-            z-index: 10;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>OK.ru Video with Controls</title>
+  <style>
+    #videoContainer {
+      position: relative;
+      width: 853px;
+      height: 480px;
+      margin: 0 auto;
+      background: #808080;
+      transition: transform 0.5s ease;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .controls button {
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="video-container">
-        <iframe id="video" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-        <div class="controls">
-            <button id="play-pause">⏯️</button>
-            <button id="volume">🔊</button>
-            <button id="fullscreen">⛶</button>
-        </div>
-        <div class="watermark">Your Watermark</div>
-    </div>
 
-    <script>
-        // JavaScript for custom controls
-        const videoContainer = document.querySelector('.video-container');
-        const controls = document.querySelector('.controls');
-        const playPauseButton = document.getElementById('play-pause');
-        const volumeButton = document.getElementById('volume');
-        const fullscreenButton = document.getElementById('fullscreen');
-        const iframe = document.getElementById('video');
+<div id="videoContainer">
+  <iframe id="videoFrame" src="https://ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+<script>
+  function closeVideo() {
+    document.getElementById('videoContainer').style.display = 'none';
+  }
+</script>
 
-        let isPlaying = true;
-        let isMuted = false;
+  <div class="controls">
+    <button onclick="togglePlayPause()">Pause/Play</button>
+    <button onclick="toggleMute()">Mute/Unmute</button>
+    <button onclick="toggleLandscape()">Landscape</button>
+    <button onclick="enterFullscreen()">Fullscreen</button>
+  </div>
+</div>
 
-        // Auto-hide controls
-        videoContainer.addEventListener('mousemove', () => {
-            controls.classList.remove('hide');
-            setTimeout(() => controls.classList.add('hide'), 3000);
-        });
+<script>
+  let muted = false;
 
-        // Play/Pause
-        playPauseButton.addEventListener('click', () => {
-            if (isPlaying) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                playPauseButton.textContent = '⏯️';
-            } else {
-                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                playPauseButton.textContent = '⏸️';
-            }
-            isPlaying = !isPlaying;
-        });
+  function togglePlayPause() {
+    // Reload iframe to "pause/play"
+    const iframe = document.getElementById('videoFrame');
+    const src = iframe.src;
+    iframe.src = src;
+  }
 
-        // Volume
-        volumeButton.addEventListener('click', () => {
-            if (isMuted) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-                volumeButton.textContent = '🔊';
-            } else {
-                iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
-                volumeButton.textContent = '🔇';
-            }
-            isMuted = !isMuted;
-        });
+  function toggleMute() {
+    muted = !muted;
+    const iframe = document.getElementById('videoFrame');
+    iframe.style.visibility = muted ? 'hidden' : 'visible';
+  }
 
-        // Fullscreen
-        fullscreenButton.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                videoContainer.requestFullscreen();
-            }
-        });
+  function toggleLandscape() {
+    const container = document.getElementById('videoContainer');
+    if (container.style.transform === "rotate(90deg)") {
+      container.style.transform = "rotate(0deg)";
+    } else {
+      container.style.transform = "rotate(90deg)";
+    }
+  }
 
-        // Handle fullscreen change
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                fullscreenButton.textContent = '⛶';
-            } else {
-                fullscreenButton.textContent = '⛶';
-            }
-        });
+  function enterFullscreen() {
+    const container = document.getElementById('videoContainer');
+    if (container.requestFullscreen) {
+      container.requestFullscreen();
+    } else if (container.webkitRequestFullscreen) { /* Safari */
+      container.webkitRequestFullscreen();
+    } else if (container.msRequestFullscreen) { /* IE11 */
+      container.msRequestFullscreen();
+    }
+  }
+</script>
 
-        // Landscape mode for mobile
-        function handleOrientationChange() {
-            if (window.orientation === 90 || window.orientation === -90) {
-                videoContainer.requestFullscreen();
-            }
-        }
-        window.addEventListener('orientationchange', handleOrientationChange);
-    </script>
 </body>
 </html>
