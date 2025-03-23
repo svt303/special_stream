@@ -2,34 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-        <meta name="viewport" content="with=device-width, initial-
-        scale=1.0">
-        <title>Special Stream</title>
-       <body bgcolor="darkgray">
-
-<style>
-  .video-wrapper {
+  <title>Custom OK.ru Video Player</title>
+  <style>
+    .video-wrapper {
       position: relative;
       width: 853px;
       height: 480px;
-      margin: auto;
       background: black;
     }
 
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Disable default controls */
-    }
-
-    .overlay-blocker {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 5;
+      pointer-events: none; /* Disable iframe interaction */
     }
 
     .controls {
@@ -52,90 +37,20 @@
       padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
-      font-weight: bold;
     }
 
     .hidden-controls {
       opacity: 0;
-      transition: opacity 0.5s;
     }
-
-    /* Watermark Styling */
-    .watermark { 
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      color: white; 
-      font-size: 18px; 
-      background: 
-      rgba(0, 0, 0, 0.5); 
-      padding: 5px 10px; 
-      border-radius: 5px; 
-      pointer-events: none; 
-      /* Prevent interaction */ }
-   }
-    #instructionModal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      z-index: 20;
-    }
-
-    #instructionModal div {
-      background: #FFFFFF;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    #instructionModal button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      border: none;
-      background: white;
-      color: black;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .additional-info {
-      text-align: center;
-      margin: 20px auto;
-      max-width: 90%;
-    }
-
   </style>
 </head>
-<h1 align="left">STREAMING🔴....</h1>
 <body>
-<center>
-  
-<div id="instructionModal">
-  <div>
-    <h2>Instructions</h2>
-    <p>No Sound?</p>
-    <p>Just click Pause and Play then wait for a little</p>
-    <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
-  </div>
-</div>
 
 <div class="video-wrapper" id="videoWrapper">
-
-  <!-- OK.ru Video -->
   <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
   
-  <!-- Overlay blocker -->
-  <div class="overlay-blocker"></div>
-
-  <!-- Watermark -->
-  <div class="watermark">DAY 2 CL25</div>
+  <!-- Overlay div to block original controls -->
+  <div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;"></div>
 
   <!-- Custom Controls -->
   <div class="controls" id="customControls">
@@ -144,7 +59,6 @@
     <button id="fullscreenToggle">Fullscreen</button>
   </div>
 </div>
-</center>
 
 <script>
   const playPauseBtn = document.getElementById('playPause');
@@ -156,18 +70,18 @@
 
   let isPlaying = true;
   let isMuted = false;
-  let autoHideTimeout;
+  let timeout;
 
-  / AUTO HIDE CONTROLS /
+  // Function: Auto-hide controls
   function showControls() {
     controls.classList.remove('hidden-controls');
-    clearTimeout(autoHideTimeout);
-    autoHideTimeout = setTimeout(() => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
       controls.classList.add('hidden-controls');
-    }, 2000);
+    }, 2000); // 2 seconds
   }
 
-  / FULLSCREEN TOGGLE /
+  // Fullscreen toggle
   fullscreenToggleBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       videoWrapper.requestFullscreen().then(() => {
@@ -177,13 +91,10 @@
       });
     } else {
       document.exitFullscreen();
-      if (screen.orientation) {
-        screen.orientation.unlock?.();
-      }
     }
   });
 
-/ PLAY/PAUSE (reload workaround) /
+  // Play/Pause (simulate via reload)
   playPauseBtn.addEventListener('click', () => {
     if (isPlaying) {
       iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
@@ -196,31 +107,33 @@
     }
   });
 
-  / VOLUME (simulated toggle, not muting real audio) /
+  // Volume toggle (simulated)
   volumeToggleBtn.addEventListener('click', () => {
     if (isMuted) {
+      iframe.muted = false;
       volumeToggleBtn.textContent = 'Mute';
       isMuted = false;
     } else {
+      iframe.muted = true;
       volumeToggleBtn.textContent = 'Unmute';
       isMuted = true;
     }
   });
 
-  / MOUSEMOVE - SHOW CONTROLS /
-  document.addEventListener('mousemove', () => {
+  // Detect mouse movement (fullscreen or not)
+  document.addEventListener('mousemove', (e) => {
     if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
       showControls();
     }
   });
 
-  / FULLSCREEN CHANGE /
+  // Auto-hide after entering fullscreen
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
-      showControls();
+      showControls(); // Show controls immediately
     } else {
-      controls.classList.remove('hidden-controls');
-      clearTimeout(autoHideTimeout);
+      controls.classList.remove('hidden-controls'); // Always visible when not fullscreen
+      clearTimeout(timeout);
     }
   });
 
@@ -235,5 +148,5 @@
 
 <div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
 </body>
-    </body>
 </html>
+
