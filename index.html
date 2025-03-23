@@ -1,8 +1,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+        <meta name="viewport" content="with=device-width, initial-
+        scale=1.0">
+        <title>Special Stream</title>
+       <body bgcolor="darkgray">
   <title>Special Live</title>
-  <style>
+
+         <style>
     .video-wrapper {
       position: relative;
       width: 853px;
@@ -48,8 +54,8 @@
   </style>
 </head>
 <body>
-
-<div class="video-wrapper" id="videoWrapper">
+<center>
+  <div class="video-wrapper" id="videoWrapper">
   <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
   
   <!-- Overlay div to block original controls -->
@@ -62,6 +68,7 @@
     <button id="fullscreenToggle">Fullscreen</button>
   </div>
 </div>
+</center>
 
 <script>
   const playPauseBtn = document.getElementById('playPause');
@@ -70,6 +77,8 @@
   const videoWrapper = document.getElementById('videoWrapper');
   const controls = document.getElementById('customControls');
   const iframe = document.getElementById('okVideo');
+
+
 
   let isPlaying = true;
   let isMuted = false;
