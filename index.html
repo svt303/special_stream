@@ -1,19 +1,25 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special Stream</title>
+  <style>
+    body {
+      background-color: darkgray;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
 
-        <meta name="viewport" content="with=device-width, initial-
-        scale=1.0">
-        <title>Special Stream</title>
-       <body bgcolor="darkgray">
-
-<style>
-  .video-wrapper {
+    .video-wrapper {
       position: relative;
-      width: 853px;
-      height: 480px;
-      margin: auto;
+      width: 90%;
+      max-width: 853px;
+      margin: 20px auto;
       background: black;
+      aspect-ratio: 16 / 9;
     }
 
     iframe {
@@ -34,8 +40,10 @@
     .controls {
       position: absolute;
       bottom: 10px;
-      left: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       z-index: 10;
       background: rgba(0, 0, 0, 0.5);
@@ -48,10 +56,11 @@
     .controls button {
       background: white;
       border: none;
-      padding: 5px 10px;
+      padding: 8px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 14px;
     }
 
     .hidden-controls {
@@ -59,57 +68,75 @@
       transition: opacity 0.5s;
     }
 
-    /* Watermark Styling */
-    .watermark { 
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      color: white; 
-      font-size: 18px; 
-      background: 
-      rgba(0, 0, 0, 0.5); 
-      padding: 5px 10px; 
-      border-radius: 5px; 
-      pointer-events: none; 
-      /* Prevent interaction */ }
-   }
-     #instructionModal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; 
-    height: 100%;
-    background: rgba(255, 255, 255, 1);
-    display: flex; justify-content: center; align-items: center;
-    color: white;
-  }
-  #instructionModal div {
-    background: #FFFFFF; padding: 20px; border-radius: 10px; text-align: center;
-  } 
-  
+    .watermark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: white;
+      font-size: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px 8px;
+      border-radius: 5px;
+      pointer-events: none;
+    }
+
+    #instructionModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    #instructionModal div {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    #instructionModal h2, #instructionModal p {
+      color: black;
+    }
+
+    @media (max-width: 600px) {
+      .controls button {
+        padding: 6px;
+        font-size: 12px;
+      }
+      .watermark {
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+    }
   </style>
 </head>
-<h1 align="left">STREAMING🔴....</h1>
 <body>
-<center>
-  
+
+<h1 style="text-align: left; color: white; padding-left: 10px;">STREAMING 🔴...</h1>
+
+<!-- Instruction Modal -->
 <div id="instructionModal">
   <div>
     <h2>Instructions</h2>
     <p>No Sound?</p>
-    <p>Just click Pause and Play then wait for a little</p>
+    <p>Click Pause & Play then wait for a moment.</p>
     <button onclick="document.getElementById('instructionModal').style.display='none'">Got It!</button>
   </div>
 </div>
-  
-<div class="video-wrapper" id="videoWrapper">
 
-  <!-- OK.ru Video -->
+<!-- Video Wrapper -->
+<div class="video-wrapper" id="videoWrapper">
   <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
   
-  <!-- Overlay blocker -->
   <div class="overlay-blocker"></div>
-
-  <!-- Watermark -->
+  
   <div class="watermark">DAY 2 CL25</div>
 
   <!-- Custom Controls -->
@@ -119,8 +146,27 @@
     <button id="fullscreenToggle">Fullscreen</button>
   </div>
 </div>
-</center>
 
+<!-- Countdown Timer -->
+<p>==================================================================</p>
+<script src="https://cdn.logwork.com/widget/countdown.js"></script>
+<a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
+
+<!-- Visitor Counter -->
+<div class="col-xs-12 mt20" id="bg">
+  <div style="margin:0 auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px">
+    <span style="padding:7px;display:inline-block;border-right:1px solid #746dba">
+      <a href="http://visitorshitcounter.com" rel="nofollow noopener" target="_blank" title="https://visitorshitcounter.com/">
+        <img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left">
+      </a>
+    </span>
+    <span class="text" id="dupli_hit_counter" style="padding:10px 0 0 0;display:inline-block;color:white;width:100%;text-align:center;"></span>
+    <input type="hidden" id="site_val" value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1">
+  </div>
+</div>
+<script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script>
+
+<!-- Script -->
 <script>
   const playPauseBtn = document.getElementById('playPause');
   const volumeToggleBtn = document.getElementById('volumeToggle');
@@ -133,7 +179,7 @@
   let isMuted = false;
   let autoHideTimeout;
 
-  /** AUTO HIDE CONTROLS **/
+  // Auto Hide Controls
   function showControls() {
     controls.classList.remove('hidden-controls');
     clearTimeout(autoHideTimeout);
@@ -142,7 +188,6 @@
     }, 2000);
   }
 
-  /** FULLSCREEN TOGGLE **/
   fullscreenToggleBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       videoWrapper.requestFullscreen().then(() => {
@@ -158,7 +203,6 @@
     }
   });
 
-  /** PLAY/PAUSE (reload workaround) **/
   playPauseBtn.addEventListener('click', () => {
     if (isPlaying) {
       iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
@@ -171,7 +215,6 @@
     }
   });
 
-  /** VOLUME (simulated toggle, not muting real audio) **/
   volumeToggleBtn.addEventListener('click', () => {
     if (isMuted) {
       volumeToggleBtn.textContent = 'Mute';
@@ -182,14 +225,12 @@
     }
   });
 
-  /** MOUSEMOVE - SHOW CONTROLS **/
   document.addEventListener('mousemove', () => {
     if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
       showControls();
     }
   });
 
-  /** FULLSCREEN CHANGE **/
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
       showControls();
@@ -199,14 +240,8 @@
     }
   });
 
-  // Initial hide setup
   videoWrapper.addEventListener('mousemove', showControls);
 </script>
-<center><p>================================================================================</p></center>
-<script src="https://cdn.logwork.com/widget/countdown.js"></script>
-<a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
 
-<div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
 </body>
-    </body>
 </html>
