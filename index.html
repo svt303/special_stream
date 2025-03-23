@@ -2,38 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Special Stream</title>
-  <style>
-    body {
-      background-color: darkgray;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
 
-    h1 {
-      text-align: center;
-      color: white;
-    }
+        <meta name="viewport" content="with=device-width, initial-
+        scale=1.0">
+        <title>Special Stream</title>
+       <body bgcolor="darkgray">
 
-    .video-wrapper {
+<style>
+  .video-wrapper {
       position: relative;
-      width: 90%;
-      max-width: 853px;
-      aspect-ratio: 16 / 9;
-      margin: 20px auto;
+      width: 853px;
+      height: 480px;
+      margin: auto;
       background: black;
     }
 
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      border: none;
+      pointer-events: none; /* Disable default controls */
     }
 
     .overlay-blocker {
@@ -57,7 +44,6 @@
       border-radius: 8px;
       opacity: 1;
       transition: opacity 0.5s;
-      flex-wrap: wrap;
     }
 
     .controls button {
@@ -74,18 +60,20 @@
       transition: opacity 0.5s;
     }
 
-    .watermark {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      color: white;
-      font-size: 14px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      border-radius: 5px;
-      pointer-events: none;
-    }
-
+    /* Watermark Styling */
+    .watermark { 
+      position: absolute; 
+      top: 10px; 
+      right: 10px; 
+      color: white; 
+      font-size: 18px; 
+      background: 
+      rgba(0, 0, 0, 0.5); 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+      pointer-events: none; 
+      /* Prevent interaction */ }
+   }
     #instructionModal {
       position: fixed;
       top: 0;
@@ -123,29 +111,12 @@
       max-width: 90%;
     }
 
-    @media (max-width: 600px) {
-      .controls {
-        flex-direction: column;
-        left: 5px;
-        bottom: 5px;
-        gap: 5px;
-      }
-
-      .controls button {
-        padding: 8px;
-        font-size: 14px;
-      }
-
-      .watermark {
-        font-size: 12px;
-      }
-    }
   </style>
 </head>
+<h1 align="left">STREAMING🔴....</h1>
 <body>
-
-<h1>STREAMING🔴....</h1>
-
+<center>
+  
 <div id="instructionModal">
   <div>
     <h2>Instructions</h2>
@@ -156,34 +127,24 @@
 </div>
 
 <div class="video-wrapper" id="videoWrapper">
-  <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay" allowfullscreen></iframe>
+
+  <!-- OK.ru Video -->
+  <iframe id="okVideo" src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+  
+  <!-- Overlay blocker -->
   <div class="overlay-blocker"></div>
-  
+
+  <!-- Watermark -->
   <div class="watermark">DAY 2 CL25</div>
-  
+
+  <!-- Custom Controls -->
   <div class="controls" id="customControls">
     <button id="playPause">Pause</button>
     <button id="volumeToggle">Mute</button>
     <button id="fullscreenToggle">Fullscreen</button>
   </div>
 </div>
-
-<div class="additional-info">
-  <p>================================================================================</p>
-  <script src="https://cdn.logwork.com/widget/countdown.js"></script>
-  <a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
-
-  <div style="margin:20px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px">
-    <span style="padding:7px;display:inline-block;border-right:1px solid #746dba">
-      <a href="http://visitorshitcounter.com" rel="nofollow noopener" target="_blank">
-        <img src="https://visitorshitcounter.com/img/s-logo.svg" alt="Hit Counter" style="width:100%;border:none;float:left">
-      </a>
-    </span>
-    <span class="text" id="dupli_hit_counter" style="padding:10px 0 0 0;display:inline-block;color:white;width:100%;text-align:center;"></span>
-    <input type="hidden" id="site_val" value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1">
-  </div>
-  <script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script>
-</div>
+</center>
 
 <script>
   const playPauseBtn = document.getElementById('playPause');
@@ -197,14 +158,16 @@
   let isMuted = false;
   let autoHideTimeout;
 
+  / AUTO HIDE CONTROLS /
   function showControls() {
     controls.classList.remove('hidden-controls');
     clearTimeout(autoHideTimeout);
     autoHideTimeout = setTimeout(() => {
       controls.classList.add('hidden-controls');
-    }, 3000);
+    }, 2000);
   }
 
+  / FULLSCREEN TOGGLE /
   fullscreenToggleBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       videoWrapper.requestFullscreen().then(() => {
@@ -220,6 +183,7 @@
     }
   });
 
+/ PLAY/PAUSE (reload workaround) /
   playPauseBtn.addEventListener('click', () => {
     if (isPlaying) {
       iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
@@ -232,6 +196,7 @@
     }
   });
 
+  / VOLUME (simulated toggle, not muting real audio) /
   volumeToggleBtn.addEventListener('click', () => {
     if (isMuted) {
       volumeToggleBtn.textContent = 'Mute';
@@ -242,12 +207,14 @@
     }
   });
 
+  / MOUSEMOVE - SHOW CONTROLS /
   document.addEventListener('mousemove', () => {
     if (document.fullscreenElement === videoWrapper || !document.fullscreenElement) {
       showControls();
     }
   });
 
+  / FULLSCREEN CHANGE /
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
       showControls();
@@ -257,8 +224,14 @@
     }
   });
 
+  // Initial hide setup
   videoWrapper.addEventListener('mousemove', showControls);
 </script>
+<center><p>================================================================================</p></center>
+<script src="https://cdn.logwork.com/widget/countdown.js"></script>
+<a href="https://logwork.com/countdown-timer" class="countdown-timer" data-timezone="Asia/Manila" data-date="2025-03-23 16:00">Countdown Timer</a>
 
+<div class="col-xs-12 mt20" id="bg"><div style="margin:0px auto;width:133px;background:rgb(2, 105, 255);text-align:left;display:flex;border-radius:5px"><span style="padding:7px;display:inline-block;border-right:1px solid #746dba"><a href="http://visitorshitcounter.com" rel="nofollow noopener"  target="_blank" title="https://visitorshitcounter.com/"><img src="https://visitorshitcounter.com/img/s-logo.svg" alt="https://visitorshitcounter.com/" style="width:100%;border:none;float:left"></a></span><span class="text" id="dupli_hit_counter"   style="padding:10px 0 0 0;display:inline-block;color:rgb(255, 255, 255);width:100%;text-align:center;"></span></span><input type="hidden" id="site_val"   value="https://visitorshitcounter.com/counterDisplay?code=aff4f6b9cae60a23400b2db348e90786&style=0017&pad=5&type=page&initCount=1"></div></div><script src="https://visitorshitcounter.com/js/badgess.js?v=1742652770"></script><!-- Badge Code End Here -->
 </body>
+    </body>
 </html>
