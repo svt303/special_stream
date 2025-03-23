@@ -10,62 +10,44 @@
 </head>
 <body>
     <h1 align="left">STREAMING....</h1>
-  <style>
-    body {
-      margin: 0;
-      background-color: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
 
     .video-container {
       position: relative;
       width: 853px;
       height: 480px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
-
-    iframe {
+    video {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Disable interaction with default OK.ru controls */
     }
-
-    .custom-controls {
+    .controls {
       position: absolute;
       bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: rgba(0, 0, 0, 0.7);
+      width: 100%;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
-      transition: opacity 0.5s;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      box-sizing: border-box;
       opacity: 1;
+      transition: opacity 0.5s;
     }
-
-    .custom-controls.hidden {
+    .controls.hidden {
       opacity: 0;
-      pointer-events: none;
     }
-
-    .control-btn {
-      background: transparent;
+    .controls button, .controls input {
+      background: none;
       border: none;
-      color: white;
-      font-size: 20px;
-      margin: 0 5px;
+      color: #fff;
       cursor: pointer;
+      font-size: 16px;
     }
-
+    .controls input[type="range"] {
+      width: 100px;
+    }
     .live-indicator {
       color: red;
-      margin-left: 10px;
       font-weight: bold;
     }
   </style>
@@ -73,24 +55,44 @@
 <body>
 
 <div class="video-container" onmousemove="showControls()">
-  <iframe src="https://ok.ru/videoembed/9252831698648?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-
-  <!-- Custom Controls -->
-  <div class="custom-controls" id="controls">
-    <div>
-      <button class="control-btn" onclick="togglePlay()">⏯️</button>
-      <button class="control-btn" onclick="volumeNotice()">🔊</button>
-      <span class="live-indicator">LIVE</span>
-    </div>
-    <div>
-      <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
-    </div>
+  <video id="video" src="your-video-file.mp4" autoplay></video>
+  <div class="controls" id="controls">
+    <button id="playPause">Pause</button>
+    <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+    <button id="fullscreen">Fullscreen</button>
+    <span class="live-indicator">LIVE</span>
   </div>
 </div>
 
 <script>
-  let controls = document.getElementById('controls');
+  const video = document.getElementById('video');
+  const playPauseBtn = document.getElementById('playPause');
+  const volumeSlider = document.getElementById('volume');
+  const fullscreenBtn = document.getElementById('fullscreen');
+  const controls = document.getElementById('controls');
   let hideTimeout;
+
+  playPauseBtn.addEventListener('click', () => {
+    if (video.paused) {
+      video.play();
+      playPauseBtn.textContent = 'Pause';
+    } else {
+      video.pause();
+      playPauseBtn.textContent = 'Play';
+    }
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    video.volume = volumeSlider.value;
+  });
+
+  fullscreenBtn.addEventListener('click', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      video.requestFullscreen();
+    }
+  });
 
   function showControls() {
     controls.classList.remove('hidden');
@@ -100,31 +102,28 @@
     }, 3000);
   }
 
-  function togglePlay() {
-    // Reload iframe to simulate play/pause (no real control)
-    const iframe = document.querySelector('iframe');
-    iframe.src = iframe.src;
-  }
+  video.addEventListener('play', () => {
+    playPauseBtn.textContent = 'Pause';
+  });
 
-  function volumeNotice() {
-    alert("Volume control is not available due to OK.ru iframe restrictions. Use your device volume buttons.");
-  }
+  video.addEventListener('pause', () => {
+    playPauseBtn.textContent = 'Play';
+  });
 
-  function toggleFullscreen() {
-    const container = document.querySelector('.video-container');
-    if (container.requestFullscreen) {
-      container.requestFullscreen();
-    } else if (container.webkitRequestFullscreen) {
-      container.webkitRequestFullscreen();
-    } else if (container.msRequestFullscreen) {
-      container.msRequestFullscreen();
+  video.addEventListener('volumechange', () => {
+    volumeSlider.value = video.volume;
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      fullscreenBtn.textContent = 'Exit Fullscreen';
+    } else {
+      fullscreenBtn.textContent = 'Fullscreen';
     }
-  }
+  });
 
-  // Start auto-hide
   showControls();
 </script>
-
 
 
     <div>
