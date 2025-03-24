@@ -9,11 +9,35 @@
       margin: 0;
       background: #2c2c2c;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       height: 100vh;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
+    }
+    .status-container {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .streaming-heading {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      margin-right: 10px;
+      animation: pulse 1.5s infinite;
+    }
+    .live-indicator {
+      font-size: 18px;
+      color: #2ecc71;
+    }
+    .offline-indicator {
+      font-size: 18px;
+      color: #e74c3c;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
     .player-container {
       position: relative;
@@ -24,11 +48,11 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+      margin-top: 20px;
     }
     iframe {
       width: 100%;
       height: 100%;
-      pointer-events: none; /* lock default controls */
     }
     .controls {
       position: absolute;
@@ -41,23 +65,26 @@
       transition: opacity 0.5s;
       z-index: 10;
       background: rgba(0, 0, 0, 0.5);
-      padding: 10px 20px;
+      padding: 12px 25px;
       border-radius: 30px;
       backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
     .controls button {
-      background: #1f1f1f;
+      background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
       color: white;
       border: none;
-      padding: 12px;
+      padding: 14px;
       border-radius: 50%;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     }
     .controls button:hover {
-      background: #555;
-      transform: scale(1.1);
+      background: linear-gradient(135deg, #444, #666);
+      transform: scale(1.15);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6);
     }
     .watermark {
       position: absolute;
@@ -100,25 +127,33 @@
     }
     .instructions-content button {
       margin-top: 20px;
-      padding: 10px 25px;
-      background: #333;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #333, #555);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.2s;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
     .instructions-content button:hover {
-      background: #555;
+      background: linear-gradient(135deg, #555, #777);
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
+<div class="status-container">
+  <div class="streaming-heading">STREAMING</div>
+  <div id="liveIndicator" class="live-indicator">Offline</div>
+</div>
+
 <div class="player-container" id="player">
-  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1" frameborder="0" allow="autoplay"></iframe>
+  <iframe src="//ok.ru/videoembed/9252831698648?autoplay=1&muted=0&quality=1080p" frameborder="0" allow="autoplay"></iframe>
   
-  <div class="watermark">My Watermark</div>
+  <div class="watermark"></div>
   
   <div class="controls" id="controls">
     <button id="playPause">⏸️</button>
@@ -131,64 +166,80 @@
   <div class="instructions-content">
     <h3>Instructions</h3>
     <p>Use the custom controls to play/pause, toggle volume, and fullscreen the video.</p>
-    <button onclick="closeModal()">Got it!</button>
+    <button id="gotItButton">Got it!</button>
   </div>
 </div>
 
 <script>
-  const player = document.getElementById('player');
-  const controls = document.getElementById('controls');
-  const playPauseBtn = document.getElementById('playPause');
-  const volumeBtn = document.getElementById('volume');
-  const fullscreenBtn = document.getElementById('fullscreen');
-  const iframe = player.querySelector('iframe');
-  let isPlaying = true;
-  let isMuted = false;
-  let hideTimeout;
+  document.addEventListener('DOMContentLoaded', () => {
+    const player = document.getElementById('player');
+    const controls = document.getElementById('controls');
+    const playPauseBtn = document.getElementById('playPause');
+    const volumeBtn = document.getElementById('volume');
+    const fullscreenBtn = document.getElementById('fullscreen');
+    const iframe = player.querySelector('iframe');
+    const modal = document.getElementById('modal');
+    const gotItButton = document.getElementById('gotItButton');
+    const liveIndicator = document.getElementById('liveIndicator');
 
-  function showControls() {
-    controls.style.opacity = 1;
-    clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(() => {
-      controls.style.opacity = 0;
-    }, 3000);
-  }
+    let isPlaying = true;
+    let isMuted = false;
+    let hideTimeout;
 
-  player.addEventListener('mousemove', showControls);
-  player.addEventListener('click', showControls);
-  showControls();
+    function showControls() {
+      controls.style.opacity = 1;
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        controls.style.opacity = 0;
+      }, 3000);
+    }
+    player.addEventListener('mousemove', showControls);
+    player.addEventListener('click', showControls);
+    showControls();
 
-  playPauseBtn.addEventListener('click', () => {
-    isPlaying = !isPlaying;
-    playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
-    // Reload iframe to simulate replay
-    if (isPlaying) {
-      const src = iframe.src;
-      iframe.src = '';
-      setTimeout(() => {
-        iframe.src = src;
-      }, 100);
+    playPauseBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
+      if (isPlaying) {
+        const src = iframe.src;
+        iframe.src = '';
+        setTimeout(() => {
+          iframe.src = src;
+        }, 100);
+      }
+    });
+
+    volumeBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      volumeBtn.textContent = isMuted ? '🔇' : '🔊';
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        player.requestFullscreen().then(() => {
+          screen.orientation.lock('landscape').catch(() => {});
+        }).catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    gotItButton.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    function toggleLiveStatus(isOnline) {
+      if (isOnline) {
+        liveIndicator.textContent = 'Online';
+        liveIndicator.classList.remove('offline-indicator');
+        liveIndicator.classList.add('live-indicator');
+      } else {
+        liveIndicator.textContent = 'Offline';
+        liveIndicator.classList.remove('live-indicator');
+        liveIndicator.classList.add('offline-indicator');
+      }
     }
   });
-
-  volumeBtn.addEventListener('click', () => {
-    isMuted = !isMuted;
-    volumeBtn.textContent = isMuted ? '🔇' : '🔊';
-  });
-
-  fullscreenBtn.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      player.requestFullscreen().then(() => {
-        screen.orientation.lock('landscape').catch(() => {});
-      }).catch(() => {});
-    } else {
-      document.exitFullscreen();
-    }
-  });
-
-  function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
 </script>
 
 </body>
